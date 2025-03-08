@@ -1,0 +1,49 @@
+# Profile get token kautta
+GET http://localhost:3000/api/user/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTQ2NDA5MCwiZXhwIjoxNzQxNDY3NjkwfQ.a29U51Aaev-fEueWh9dKuq68eArjye6mQF-xlx4YKTI
+
+# Get users
+GET http://localhost:3000/api/user/users
+
+###
+
+# Signup
+POST http://localhost:3000/api/user/signup
+Content-Type: application/json
+
+{
+  "email": "example@example.com",
+  "password": "password123"
+}
+
+###
+
+# Login
+POST http://localhost:3000/api/user/login
+Content-Type: application/json
+
+{
+  "name_email": "nihadazzam96@gmail.com",
+  "password": "12345678"
+}
+
+###
+
+# Forgot Password
+POST http://localhost:3000/api/user/forgot-password
+Content-Type: application/json
+
+{
+  "email": "nihadazzam96@gmail.com"
+}
+
+###
+
+# Reset Password
+POST http://localhost:3000/api/user/reset-password
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTQ2NTA0OCwiZXhwIjoxNzQxNDY4NjQ4fQ.LraQnVdwU6LumCwQT8Ik5qhxeaScwB7agVMY-fsHbGY",
+  "password": "123456789"
+}
