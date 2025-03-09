@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity, StatusBar } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const LoginScreen = ({ navigation }: any) => {
     const [nameEmail, setNameEmail] = useState("");
@@ -25,19 +26,30 @@ const LoginScreen = ({ navigation }: any) => {
     };
 
     return (
+        <SafeAreaView style={styles.root}>
         <View style={styles.container}>
-            <Text>Login</Text>
-            <TextInput style={styles.input} placeholder="Email or Username" onChangeText={setNameEmail} />
-            <TextInput style={styles.input} placeholder="Password" onChangeText={setPassword} secureTextEntry />
-            <Button title="Login" onPress={handleLogin} />
-            <Button title="Go to Signup" onPress={() => navigation.navigate("Signup")} />
+            <Text style={styles.loginText}>WELCOME TO POWERLOG</Text>
+            <TextInput style={styles.input} placeholder="Email or Username" placeholderTextColor="white" onChangeText={setNameEmail} />
+            <TextInput style={styles.input} placeholder="Password" placeholderTextColor="white" onChangeText={setPassword} secureTextEntry />
+            <TouchableOpacity style={styles.loginButtonStyle} onPress={handleLogin}>
+                <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonStyle} onPress={() => navigation.navigate("Signup")}>
+                <Text style={styles.buttonText}>Go to Signup</Text>
+            </TouchableOpacity>
         </View>
+    </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, justifyContent: "center" },
-    input: { borderWidth: 1, padding: 10, marginBottom: 10, borderRadius: 5 },
+    root: { flex: 1, backgroundColor: "#414141" },
+    container: { flex: 1, padding: 20, justifyContent: "center", backgroundColor: "#414141" },
+    input: { borderWidth: 1, padding: 10, marginBottom: 20, borderRadius: 10, backgroundColor: "black", color: "white" },
+    loginText: { fontSize: 24, marginBottom: 20, color: "white" },
+    loginButtonStyle: { color: "white", gap: 10, backgroundColor: "#6200EE", padding: 10, alignItems: "center", borderRadius: 10 },
+    buttonStyle: { color: "white", gap: 10, backgroundColor: "#6200EE", padding: 10, alignItems: "center", borderRadius: 10, marginTop: 20 },
+    buttonText: { color: "white", fontSize: 16 },
 });
 
 export default LoginScreen;

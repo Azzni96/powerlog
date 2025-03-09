@@ -18,5 +18,6 @@ export default function App() {
                 <Stack.Screen name="Profile" component={ProfileScreen} />
             </Stack.Navigator>
         </NavigationContainer>
+
     );
 }
