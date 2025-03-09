@@ -1,23 +1,22 @@
-import {StatusBar} from 'expo-status-bar';
-import {Platform, SafeAreaView, StyleSheet, Text} from 'react-native';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import SignupScreen from "./screens/SignupScreen";
+import LoginScreen from "./screens/LoginScreen";
+import HomeScreen from "./screens/HomeScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 
-const App = () => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text>Hello, React Native!</Text>
-      <StatusBar style="auto" />
-    </SafeAreaView>
-  );
-};
+const Stack = createStackNavigator();
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: Platform.OS === 'android' ? 30 : 0,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-export default App;
+export default function App() {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName="Login">
+                <Stack.Screen name="Signup" component={SignupScreen} />
+                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="Home" component={HomeScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+}
