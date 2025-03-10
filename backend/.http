@@ -1,6 +1,6 @@
 # Profile get token kautta
 GET http://localhost:3000/api/user/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTQ2NDA5MCwiZXhwIjoxNzQxNDY3NjkwfQ.a29U51Aaev-fEueWh9dKuq68eArjye6mQF-xlx4YKTI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTU0NTMwOSwiZXhwIjoxNzQxNTQ4OTA5fQ.leW5zT97Pg3yEB4yX26v-V_mAJv3kSI0okSx-0xejok
 
 # Get users
 GET http://localhost:3000/api/user/users
@@ -23,8 +23,8 @@ POST http://localhost:3000/api/user/login
 Content-Type: application/json
 
 {
-  "name_email": "Nnnn",
-  "password": "123456"
+  "name_email": "nihadazzam96@gmail.com",
+  "password": "12345"
 }
 
 ###
@@ -47,3 +47,27 @@ Content-Type: application/json
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTQ2NTA0OCwiZXhwIjoxNzQxNDY4NjQ4fQ.LraQnVdwU6LumCwQT8Ik5qhxeaScwB7agVMY-fsHbGY",
   "password": "123456789"
 }
+
+
+### 🔹 1️⃣ Hae kaikki käyttäjän ateriat
+GET http://localhost:3000/api/meals
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTU0NTMwOSwiZXhwIjoxNzQxNTQ4OTA5fQ.leW5zT97Pg3yEB4yX26v-V_mAJv3kSI0okSx-0xejok
+
+### 🔹 2️⃣ Lisää uusi ateria käyttäjälle
+POST http://localhost:3000/api/meals
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTU0NTMwOSwiZXhwIjoxNzQxNTQ4OTA5fQ.leW5zT97Pg3yEB4yX26v-V_mAJv3kSI0okSx-0xejok
+
+{
+    "name": "Kana ja Riisi",
+    "calories": 600,
+    "protein": 50,
+    "carbs": 70,
+    "fat": 10,
+    "mealType": "Lounas",
+    "image": "https://example.com/image.jpg"
+}
+
+### 🔹 3️⃣ Poista ateria (ID = 1)
+DELETE http://localhost:3000/api/meals/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoiTmloYWRAZ21haWwuY29tIiwidXNlcl9sZXZlbCI6ImN1c3RvbWVyIiwiaWF0IjoxNzQxNTIyNzMzLCJleHAiOjE3NDE1MjYzMzN9.UQUVz4uwwCNAD-0tazhIA1y5sRNduIN-K2w2_ma9im8
