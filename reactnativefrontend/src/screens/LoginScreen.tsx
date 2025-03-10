@@ -10,7 +10,7 @@ const LoginScreen = ({ navigation }: any) => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post<{ token: string }>("http://172.20.10.3:3000/api/user/login", {
+            const response = await axios.post<{ token: string }>("http://10.81.219.246:3000/api/user/login", {
                 name_email: nameEmail,
                 password,
             });
