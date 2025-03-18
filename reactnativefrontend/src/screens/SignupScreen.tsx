@@ -23,7 +23,7 @@ const SignupScreen = ({ navigation }: Props) => {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
-    const { data, ok } = await post("/user/signup", { name, email, password, confirm_password: confirmPassword });
+    const { data, ok } = await post("http://10.81.220.32:3000/user/signup", { name, email, password, confirm_password: confirmPassword });
     if (ok) {
       Alert.alert("Success", "User account created successfully");
       navigation.navigate("Login");

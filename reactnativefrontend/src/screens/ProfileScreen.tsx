@@ -14,7 +14,7 @@ const ProfileScreen = ({ navigation }: any) => {
                 return;
             }
             try {
-                const response = await axios.get("http://172.20.10.3:3000/api/user/profile", {
+                const response = await axios.get("http://10.81.220.32:3000/api/user/profile", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(response.data);
