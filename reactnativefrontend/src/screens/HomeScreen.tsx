@@ -3,7 +3,7 @@ import {View, Text, Button, Alert, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useUser from '../hooks/userHooks';
 import {CommonActions} from '@react-navigation/native';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 
 const HomeScreen = ({navigation}: any) => {
   const [user, setUser] = useState<any>(null);
@@ -59,26 +59,48 @@ const HomeScreen = ({navigation}: any) => {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <View style={styles.topTextContainer} />
-      <Text style={styles.title}>Welcome to PowerLog</Text>
-    </SafeAreaProvider>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Welcome to PowerLog</Text>
+      </View>
+      <View style={styles.content}>
+        <Text style={styles.text}>Motivation of the day: SUUTU JO!</Text>
+      </View>
+      <View style={styles.leftContainer}>
+        <Text style={styles.text}>diibadaaba</Text>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  topTextContainer: {
+  container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: '#414141',
+  },
+  leftContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#414141',
+    backgroundColor: 'black',
+  },
+  header: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#555',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     color: 'white',
+    textAlign: 'center',
   },
   text: {
     fontSize: 16,

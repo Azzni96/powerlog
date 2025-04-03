@@ -1,7 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, Button, Alert, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  Alert,
+  StyleSheet,
+  SafeAreaView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import useUser from '../hooks/userHooks';
 import {CommonActions} from '@react-navigation/native';
 
@@ -10,7 +16,6 @@ const ProfileScreen = ({navigation}: any) => {
   const {getUser} = useUser();
 
   const resetToAuth = () => {
-    // This resets the entire navigation state to show the Auth stack
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -21,25 +26,36 @@ const ProfileScreen = ({navigation}: any) => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) {
-        navigation.replace('Login');
-        return;
-      }
       try {
-        const response = await axios.get('/user/profile', {
-          headers: {Authorization: `Bearer ${token}`},
-        });
-        setUser(response.data);
+        console.log('Fetching profile data');
+        const token = await AsyncStorage.getItem('token');
+
+        if (!token) {
+          console.log('No token found');
+          resetToAuth();
+          return;
+        }
+
+        const {data, ok} = await getUser('/user/profile', token);
+
+        if (ok && data.user) {
+          console.log('Profile data:', data.user);
+          setUser(data.user);
+        } else {
+          console.log('Failed to load profile:', data);
+          Alert.alert('Error', 'Failed to fetch profile');
+          resetToAuth();
+        }
       } catch (error) {
+        console.error('Profile error:', error);
         Alert.alert('Error', 'Failed to fetch profile');
-        navigation.replace('Login');
+        resetToAuth();
       }
     };
+
     fetchProfile();
   }, []);
 
-  // logout function here for now, TODO: place to profile screen
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('token');
@@ -52,29 +68,78 @@ const ProfileScreen = ({navigation}: any) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-      <Text>Name: {user?.name}</Text>
-      <Text>Email: {user?.email}</Text>
-      <Text>User Level: {user?.user_level}</Text>
-      <Button
-        title="Logout"
-        onPress={handleLogout}
-        color="#FF0000" // Red color for logout button
-        accessibilityLabel="Logout button"
-      />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>My Profile</Text>
+
+        {user ? (
+          <View style={styles.profileCard}>
+            <Text style={styles.infoLabel}>Username:</Text>
+            <Text style={styles.infoValue}>{user.username || 'N/A'}</Text>
+
+            <Text style={styles.infoLabel}>Email:</Text>
+            <Text style={styles.infoValue}>{user.email || 'N/A'}</Text>
+
+            <Text style={styles.infoLabel}>Account Level:</Text>
+            <Text style={styles.infoValue}>
+              {user.user_level || 'Standard'}
+            </Text>
+          </View>
+        ) : (
+          <Text style={styles.loadingText}>Loading profile...</Text>
+        )}
+      </View>
+
+      <View style={styles.footer}>
+        <Button title="Logout" onPress={handleLogout} color="#FF3B30" />
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#414141',
+  },
+  content: {
+    flex: 1,
     padding: 20,
-    justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {fontSize: 24, fontWeight: 'bold', marginBottom: 20},
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'white',
+    textAlign: 'center',
+  },
+  profileCard: {
+    backgroundColor: '#2c2c2c',
+    borderRadius: 10,
+    padding: 20,
+    width: '100%',
+    marginVertical: 20,
+  },
+  infoLabel: {
+    fontSize: 14,
+    color: '#999',
+    marginBottom: 5,
+  },
+  infoValue: {
+    fontSize: 18,
+    color: 'white',
+    marginBottom: 15,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: 'white',
+    marginTop: 30,
+  },
+  footer: {
+    padding: 20,
+    width: '100%',
+  },
 });
 
 export default ProfileScreen;
