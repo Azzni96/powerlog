@@ -109,7 +109,7 @@ export const login = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       {
-        id: user.Id,
+        id: user.Id, // Make sure this is correct case
         username: user.Username,
         email: user.Email,
         user_level: user.User_level,

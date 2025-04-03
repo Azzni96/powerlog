@@ -61,11 +61,17 @@ export const updateUserPassword = async (
   conn.release();
 };
 
-export const getUserById = async (id: number): Promise<User | null> => {
-  const conn = await pool.getConnection();
-  const rows = await conn.query("SELECT * FROM users WHERE id = ?", [id]);
-  conn.release();
-  return rows[0] || null;
+export const getUserById = async (id: number) => {
+  try {
+    const conn = await pool.getConnection();
+    // Make sure to use the correct column name - 'Id' with capital I
+    const result = await conn.query("SELECT * FROM users WHERE Id = ?", [id]);
+    conn.release();
+    return result[0];
+  } catch (error) {
+    console.error("Error in getUserById:", error);
+    throw error;
+  }
 };
 
 export const getUserByName = async (name: string) => {
