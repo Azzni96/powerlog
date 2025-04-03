@@ -2,9 +2,22 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, Button, Alert, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import useUser from '../hooks/userHooks';
+import {CommonActions} from '@react-navigation/native';
 
 const ProfileScreen = ({navigation}: any) => {
   const [user, setUser] = useState<any>(null);
+  const {getUser} = useUser();
+
+  const resetToAuth = () => {
+    // This resets the entire navigation state to show the Auth stack
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      }),
+    );
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -26,6 +39,18 @@ const ProfileScreen = ({navigation}: any) => {
     fetchProfile();
   }, []);
 
+  // logout function here for now, TODO: place to profile screen
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('token');
+      console.log('Token removed, logging out');
+      resetToAuth();
+    } catch (error) {
+      console.error('Error during logout:', error);
+      Alert.alert('Error', 'Failed to logout. Please try again.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
@@ -33,8 +58,10 @@ const ProfileScreen = ({navigation}: any) => {
       <Text>Email: {user?.email}</Text>
       <Text>User Level: {user?.user_level}</Text>
       <Button
-        title="Back to Home"
-        onPress={() => navigation.navigate('Home')}
+        title="Logout"
+        onPress={handleLogout}
+        color="#FF0000" // Red color for logout button
+        accessibilityLabel="Logout button"
       />
     </View>
   );

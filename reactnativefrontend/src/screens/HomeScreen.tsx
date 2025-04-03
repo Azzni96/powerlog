@@ -1,12 +1,24 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, Button, Alert, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import useUser from '../hooks/userHooks';
+import {CommonActions} from '@react-navigation/native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const HomeScreen = ({navigation}: any) => {
   const [user, setUser] = useState<any>(null);
   const {getUser} = useUser();
+
+  // Function to navigate to Auth stack (for logout or authentication failures)
+  const resetToAuth = () => {
+    // This resets the entire navigation state to show the Auth stack
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      }),
+    );
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -17,7 +29,7 @@ const HomeScreen = ({navigation}: any) => {
         console.log('Token found:', token ? 'Yes' : 'No');
         if (!token) {
           console.log('No token available, cannot fetch profile');
-          navigation.replace('Login'); // Siirrytään kirjautumissivulle, jos token puuttuu
+          resetToAuth();
           return;
         }
 
@@ -29,54 +41,50 @@ const HomeScreen = ({navigation}: any) => {
         console.log('Profile request completed:', {ok});
 
         if (ok && data.user) {
-          console.log(
-            'Profile data received:',
-            (data as {user: {name: string; email: string; user_level: string}})
-              .user,
-          );
+          console.log('Profile data received:', data.user);
           setUser(data.user);
         } else {
           console.log('Failed to get profile data:', data);
           Alert.alert('Error', 'Failed to fetch profile');
-          navigation.replace('Login');
+          resetToAuth();
         }
       } catch (error) {
         console.error('Profile fetch error:', error);
         Alert.alert('Error', 'Failed to fetch profile');
-        navigation.replace('Login');
+        resetToAuth();
       }
     };
 
     fetchProfile();
   }, []);
 
-  const handleLogout = async () => {
-    await AsyncStorage.removeItem('token');
-    navigation.replace('Login'); // Palautetaan käyttäjä takaisin login-sivulle
-  };
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome, {user?.name || 'User'}!</Text>
-      <Text>Email: {user?.email}</Text>
-      <Text>Role: {user?.user_level}</Text>
-      <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate('Profile')}
-      />
-      <Button title="Logout" onPress={handleLogout} />
-    </View>
+    <SafeAreaProvider>
+      <View style={styles.topTextContainer} />
+      <Text style={styles.title}>Welcome to PowerLog</Text>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  topTextContainer: {
     flex: 1,
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#414141',
   },
-  title: {fontSize: 24, fontWeight: 'bold', marginBottom: 20},
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'white',
+  },
+  text: {
+    fontSize: 16,
+    color: 'white',
+    marginBottom: 10,
+  },
 });
 
 export default HomeScreen;

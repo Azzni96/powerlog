@@ -3,43 +3,61 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   Alert,
   StyleSheet,
   TouchableOpacity,
-  StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import useUser from '../hooks/userHooks'; // Import useApi hook
+import useUser from '../hooks/userHooks';
+import {CommonActions} from '@react-navigation/native'; // Add this import
 
 const LoginScreen = ({navigation}: any) => {
   const [nameEmail, setNameEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const {postUser} = useUser();
 
   const handleLogin = async () => {
+    if (!nameEmail || !password) {
+      Alert.alert('Error', 'Please enter all fields');
+      return;
+    }
+
     try {
+      setLoading(true);
       const {data, ok} = await postUser('/user/login', {
         name_email: nameEmail,
         password,
       });
 
       if (ok && data.token) {
+        console.log('Login successful, saving token');
         await AsyncStorage.setItem('token', data.token);
-        Alert.alert('Success', 'Login successful');
-        navigation.navigate('Home'); // Use the correct screen name
+
+        // Update: Direct navigation to Main stack using CommonActions
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Main'}],
+          }),
+        );
+      } else if (data.error) {
+        Alert.alert('Error', data.error);
       } else {
-        Alert.alert('Error', data.error || 'Login failed');
+        Alert.alert('Error', 'Login failed');
       }
     } catch (error: any) {
-      console.log('Login error:', error);
-      Alert.alert('Error', 'Login failed. Please try again.');
+      console.error('Error during login:', error);
+      Alert.alert('Error', 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.container}>
         <Text style={styles.loginText}>WELCOME TO POWERLOG</Text>
         <TextInput
@@ -57,14 +75,18 @@ const LoginScreen = ({navigation}: any) => {
           secureTextEntry
           value={password || ''}
         />
-        <TouchableOpacity style={styles.loginButtonStyle} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
+        {loading ? (
+          <ActivityIndicator size="large" color="#00D0FF" />
+        ) : (
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
-          style={styles.buttonStyle}
+          style={styles.signupButton}
           onPress={() => navigation.navigate('Signup')}
         >
-          <Text style={styles.buttonText}>Go to Signup</Text>
+          <Text style={styles.buttonText}>Don't have an account? Sign up</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -72,7 +94,6 @@ const LoginScreen = ({navigation}: any) => {
 };
 
 const styles = StyleSheet.create({
-  root: {flex: 1, backgroundColor: '#414141'},
   container: {
     flex: 1,
     padding: 20,
@@ -88,7 +109,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   loginText: {fontSize: 24, marginBottom: 20, color: 'white'},
-  loginButtonStyle: {
+  loginButton: {
     color: 'white',
     gap: 10,
     backgroundColor: '#6200EE',
@@ -96,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
   },
-  buttonStyle: {
+  signupButton: {
     color: 'white',
     gap: 10,
     backgroundColor: '#6200EE',

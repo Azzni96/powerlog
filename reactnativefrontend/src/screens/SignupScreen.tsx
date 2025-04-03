@@ -65,9 +65,12 @@ const SignupScreen = ({navigation}: Props) => {
       console.log('API response:', {data, ok}); // Log API response
 
       if (ok) {
-        console.log('Signup successful'); // Log success
-        Alert.alert('Success', 'User account created successfully');
-        navigation.navigate('Home'); // Navigate to HomeScreen
+        Alert.alert('Success', 'Account created successfully!', [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Login'),
+          },
+        ]);
       } else {
         console.log('Signup failed:', data.error || 'Unknown error'); // Log error from API
         Alert.alert('Error', data.error || 'Something went wrong');
@@ -116,13 +119,14 @@ const SignupScreen = ({navigation}: Props) => {
         >
           <Text style={styles.buttonText}>Signup</Text>
         </TouchableOpacity>
-        <Text style={styles.buttonText}>Already have an account?</Text>
 
         <TouchableOpacity
           style={styles.buttonStyle}
           onPress={() => navigation.navigate('Login')}
         >
-          <Text style={styles.buttonText}>Go to Login</Text>
+          <Text style={styles.buttonText}>
+            Already have an account? Go to Login
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
