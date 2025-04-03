@@ -24,25 +24,42 @@ const SignupScreen = ({navigation}: Props) => {
   const {post} = useApi();
 
   const handleSignup = async () => {
+    console.log('Signup button pressed'); // Log when the button is pressed
+
     if (!name || !email || !password || !confirmPassword) {
+      console.log('Validation failed: Missing fields'); // Log missing fields
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
+
     if (password !== confirmPassword) {
+      console.log('Validation failed: Passwords do not match'); // Log password mismatch
       Alert.alert('Error', 'Passwords do not match');
       return;
     }
-    const {data, ok} = await post('/user/signup', {
-      name,
-      email,
-      password,
-      confirm_password: confirmPassword,
-    });
-    if (ok) {
-      Alert.alert('Success', 'User account created successfully');
-      navigation.navigate('Login');
-    } else {
-      Alert.alert('Error', data.error || 'Something went wrong');
+
+    console.log('Preparing to send API request'); // Log before API call
+    try {
+      const {data, ok} = await post('/user/signup', {
+        name,
+        email,
+        password,
+        confirm_password: confirmPassword,
+      });
+      console.log('API request completed'); // Log after API call
+      console.log('API response:', {data, ok}); // Log API response
+
+      if (ok) {
+        console.log('Signup successful'); // Log success
+        Alert.alert('Success', 'User account created successfully');
+        navigation.navigate('Home'); // Navigate to HomeScreen
+      } else {
+        console.log('Signup failed:', data.error || 'Unknown error'); // Log error from API
+        Alert.alert('Error', data.error || 'Something went wrong');
+      }
+    } catch (error) {
+      console.log('Error during API request:', error); // Log unexpected errors
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
 
@@ -80,11 +97,12 @@ const SignupScreen = ({navigation}: Props) => {
         />
         <TouchableOpacity
           style={styles.loginButtonStyle}
-          onPress={handleSignup}
+          onPress={handleSignup} // Handles signup and navigation
         >
           <Text style={styles.buttonText}>Signup</Text>
         </TouchableOpacity>
         <Text style={styles.buttonText}>Already have an account?</Text>
+
         <TouchableOpacity
           style={styles.buttonStyle}
           onPress={() => navigation.navigate('Login')}
@@ -129,7 +147,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
   },
-  buttonText: {color: 'white', fontSize: 16},
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
 });
 
 export default SignupScreen;

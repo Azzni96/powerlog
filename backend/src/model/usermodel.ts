@@ -1,52 +1,83 @@
 import pool from "../database/db";
 
 export type User = {
-    id?: number;
-    name: string;
-    email: string;
-    password: string;
-    user_level: 'admin' | 'restaurant_owner' | 'customer';
-};  
+  id?: number;
+  name: string;
+  email: string;
+  password: string;
+  user_level: "admin" | "restaurant_owner" | "customer";
+};
 
 export const getAllUsers = async (): Promise<User[]> => {
-    const conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM users");
-    conn.release();
-    return rows;
-}
+  const conn = await pool.getConnection();
+  const rows = await conn.query("SELECT * FROM users");
+  conn.release();
+  return rows;
+};
 
-export const createUser = async (user: User): Promise<void> => {
+export const createUser = async (user: {
+  name: string;
+  email: string;
+  password: string;
+  user_level: string;
+}) => {
+  try {
     const conn = await pool.getConnection();
-    await conn.query(
-      "INSERT INTO users (name, email, password, user_level) VALUES (?, ?, ?, ?)",
+    const result = await conn.query(
+      "INSERT INTO users (Username, Email, Password, User_level) VALUES (?, ?, ?, ?)",
       [user.name, user.email, user.password, user.user_level]
     );
     conn.release();
+    return result;
+  } catch (error) {
+    console.error("Error in createUser:", error);
+    throw error;
+  }
 };
 
-export const getUserByEmail = async (email: string): Promise<User | null> => {
+export const getUserByEmail = async (email: string) => {
+  try {
     const conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM users WHERE email = ?", [email]);
+    const result = await conn.query("SELECT * FROM users WHERE Email = ?", [
+      email,
+    ]);
     conn.release();
-    return rows[0] || null;
+    return result[0];
+  } catch (error) {
+    console.error("Error in getUserByEmail:", error);
+    throw error;
+  }
 };
 
-export const updateUserPassword = async (email: string, newPassword: string): Promise<void> => {
-    const conn = await pool.getConnection();
-    await conn.query("UPDATE users SET password = ? WHERE email = ?", [newPassword, email]);
-    conn.release();
+export const updateUserPassword = async (
+  email: string,
+  newPassword: string
+): Promise<void> => {
+  const conn = await pool.getConnection();
+  await conn.query("UPDATE users SET password = ? WHERE email = ?", [
+    newPassword,
+    email,
+  ]);
+  conn.release();
 };
 
 export const getUserById = async (id: number): Promise<User | null> => {
-    const conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM users WHERE id = ?", [id]);
-    conn.release();
-    return rows[0] || null;
+  const conn = await pool.getConnection();
+  const rows = await conn.query("SELECT * FROM users WHERE id = ?", [id]);
+  conn.release();
+  return rows[0] || null;
 };
 
-export const getUserByName = async (name: string): Promise<User | null> => {
+export const getUserByName = async (name: string) => {
+  try {
     const conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM users WHERE name = ?", [name]);
+    const result = await conn.query("SELECT * FROM users WHERE Username = ?", [
+      name,
+    ]);
     conn.release();
-    return rows[0] || null;
+    return result[0];
+  } catch (error) {
+    console.error("Error in getUserByName:", error);
+    throw error;
+  }
 };
