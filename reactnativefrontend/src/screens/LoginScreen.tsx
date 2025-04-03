@@ -11,16 +11,16 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import useApi from '../hooks/useApi'; // Import useApi hook
+import useUser from '../hooks/userHooks'; // Import useApi hook
 
 const LoginScreen = ({navigation}: any) => {
   const [nameEmail, setNameEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {post} = useApi(); // Use the same API hook
+  const {postUser} = useUser();
 
   const handleLogin = async () => {
     try {
-      const {data, ok} = await post('/user/login', {
+      const {data, ok} = await postUser('/user/login', {
         name_email: nameEmail,
         password,
       });

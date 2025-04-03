@@ -2,27 +2,51 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, Button, Alert, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import useUser from '../hooks/userHooks';
 
 const HomeScreen = ({navigation}: any) => {
   const [user, setUser] = useState<any>(null);
+  const {getUser} = useUser();
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) {
-        navigation.replace('Login'); // Siirrytään kirjautumissivulle, jos token puuttuu
-        return;
-      }
       try {
-        const response = await axios.get('localhost/api/user/profile', {
-          headers: {Authorization: `Bearer ${token}`},
-        });
-        setUser(response.data);
+        console.log('Starting profile fetch');
+        const token = await AsyncStorage.getItem('token');
+
+        console.log('Token found:', token ? 'Yes' : 'No');
+        if (!token) {
+          console.log('No token available, cannot fetch profile');
+          navigation.replace('Login'); // Siirrytään kirjautumissivulle, jos token puuttuu
+          return;
+        }
+
+        console.log('Making profile request');
+        const {data, ok} = (await getUser('/user/profile', token)) as {
+          data: {user: {name: string; email: string; user_level: string}};
+          ok: boolean;
+        };
+        console.log('Profile request completed:', {ok});
+
+        if (ok && data.user) {
+          console.log(
+            'Profile data received:',
+            (data as {user: {name: string; email: string; user_level: string}})
+              .user,
+          );
+          setUser(data.user);
+        } else {
+          console.log('Failed to get profile data:', data);
+          Alert.alert('Error', 'Failed to fetch profile');
+          navigation.replace('Login');
+        }
       } catch (error) {
+        console.error('Profile fetch error:', error);
         Alert.alert('Error', 'Failed to fetch profile');
         navigation.replace('Login');
       }
     };
+
     fetchProfile();
   }, []);
 

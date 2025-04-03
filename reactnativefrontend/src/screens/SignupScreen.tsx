@@ -3,13 +3,13 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
   Alert,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import {NavigationProp} from '@react-navigation/native';
-import useApi from '../hooks/useApi';
+import useUser from '../hooks/userHooks';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 type Props = {
@@ -21,26 +21,41 @@ const SignupScreen = ({navigation}: Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const {post} = useApi();
+  const {postUser} = useUser();
 
   const handleSignup = async () => {
-    console.log('Signup button pressed'); // Log when the button is pressed
+    console.log('Signup button pressed');
 
+    // Check for empty fields
     if (!name || !email || !password || !confirmPassword) {
-      console.log('Validation failed: Missing fields'); // Log missing fields
+      console.log('Validation failed: Missing fields');
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
+    if (password.length < 8) {
+      console.log('Validation failed: Password too short');
+      if (Platform.OS === 'web') {
+        alert('Password must be at least 8 characters long');
+      } else {
+        Alert.alert('Error', 'Password must be at least 8 characters long');
+      }
+      return;
+    }
+
     if (password !== confirmPassword) {
-      console.log('Validation failed: Passwords do not match'); // Log password mismatch
-      Alert.alert('Error', 'Passwords do not match');
+      console.log('Validation failed: Passwords do not match');
+      if (Platform.OS === 'web') {
+        alert('Passwords do not match');
+      } else {
+        Alert.alert('Error', 'Passwords do not match');
+      }
       return;
     }
 
     console.log('Preparing to send API request'); // Log before API call
     try {
-      const {data, ok} = await post('/user/signup', {
+      const {data, ok} = await postUser('/user/signup', {
         name,
         email,
         password,

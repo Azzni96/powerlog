@@ -5,7 +5,6 @@ import {
   forgotPassword,
   resetPassword,
   fetchUsers,
-  getProfile,
 } from "../controller/usercontroller";
 import { getUserById } from "../model/usermodel"; // Add this import
 import { verifyToken } from "../middleware/auth";
@@ -28,20 +27,21 @@ router.post("/reset-password", async (req, res) => {
 router.get("/users", async (req, res) => {
   await fetchUsers(req, res);
 });
-router.get("/profile", verifyToken, async (req: Request, res: Response) => {
+
+// Define a separate controller function
+const getProfile = async (req: Request, res: Response) => {
   try {
-    // The user ID should be available from the auth middleware
-    const userId = req.user?.id; // Use optional chaining to handle undefined user
+    const userId = req.user?.id;
     console.log("Fetching profile for user ID:", userId);
 
     const user = await getUserById(userId);
     console.log("Found user:", user ? "Yes" : "No");
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: "User not found" });
+      return;
     }
 
-    // Return user data (excluding password)
     res.json({
       user: {
         id: user.Id,
@@ -54,6 +54,9 @@ router.get("/profile", verifyToken, async (req: Request, res: Response) => {
     console.error("Error fetching profile:", error);
     res.status(500).json({ error: "Failed to fetch profile" });
   }
-});
+};
+
+// Then use it in your route
+router.get("/profile", verifyToken, getProfile);
 
 export default router;

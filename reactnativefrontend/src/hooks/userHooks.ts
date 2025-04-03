@@ -2,41 +2,33 @@ import axios from 'axios';
 import {Platform} from 'react-native';
 import Constants from 'expo-constants';
 
-// Use different base URLs for different platforms and environments
+// Automatically determine the correct API URL based on environment
 const getBaseURL = () => {
-  // Get your computer's actual IP address for use with Expo Go on physical devices
-  const devServerIP = '10.81.216.194'; // Replace with your actual computer's IP
-
-  if (Platform.OS === 'android') {
-    // For Expo Go on physical device, use the actual IP
-    // For Android emulator, use the special 10.0.2.2 address
-    const isExpoGo = Constants.appOwnership === 'expo';
-    return isExpoGo
-      ? `http://${devServerIP}:3000/api`
-      : 'http://10.0.2.2:3000/api';
-  } else if (Platform.OS === 'ios') {
-    // For iOS simulator
-    return 'http://localhost:3000/api';
-  } else {
-    // For web
-    return 'http://10.81.216.194:3000/api';
+  if (Platform.OS === 'web') {
+    return '/api';
   }
+  if (Constants.expoConfig?.hostUri) {
+    const hostAddress = Constants.expoConfig.hostUri.split(':')[0];
+    return `http://${hostAddress}:3000/api`;
+  }
+  // Fallback for development or production
+  return 'http://localhost:3000/api';
 };
 
 const BASE_URL = getBaseURL();
+console.log('API Base URL:', BASE_URL);
 
-const useApi = () => {
-  const post = async (endpoint: string, body: any) => {
+const useUser = () => {
+  const postUser = async (endpoint: string, body: any) => {
     try {
       console.log(`Sending request to: ${BASE_URL}${endpoint}`);
       const response = await axios.post(`${BASE_URL}${endpoint}`, body, {
         headers: {'Content-Type': 'application/json'},
-        timeout: 15000, // 15 second timeout
+        timeout: 15000,
       });
       return {data: response.data, ok: true};
     } catch (error: any) {
       console.log('API error details:', error);
-      // Better error message for network errors
       if (error.message === 'Network Error') {
         return {
           data: {
@@ -46,6 +38,7 @@ const useApi = () => {
           ok: false,
         };
       }
+      // Add default return for other errors
       return {
         data: error.response?.data || {error: 'Something went wrong'},
         ok: false,
@@ -53,7 +46,7 @@ const useApi = () => {
     }
   };
 
-  const get = async (endpoint: string, token?: string) => {
+  const getUser = async (endpoint: string, token?: string) => {
     try {
       console.log(`Sending GET request to: ${BASE_URL}${endpoint}`);
       const headers: Record<string, string> = {
@@ -80,7 +73,7 @@ const useApi = () => {
     }
   };
 
-  return {post, get};
+  return {postUser, getUser};
 };
 
-export default useApi;
+export default useUser;
