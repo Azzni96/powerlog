@@ -7,7 +7,7 @@ import {
   fetchUsers,
 } from "../controller/usercontroller";
 import { getUserById } from "../model/usermodel"; // Add this import
-import { verifyToken } from "../middleware/auth";
+
 import { authenticate } from "../utils/authenticate";
 
 const router = express.Router();
