@@ -49,25 +49,37 @@ Content-Type: application/json
 }
 
 
-### 🔹 1️⃣ Hae kaikki käyttäjän ateriat
-GET http://localhost:3000/api/meals
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTU0NTMwOSwiZXhwIjoxNzQxNTQ4OTA5fQ.leW5zT97Pg3yEB4yX26v-V_mAJv3kSI0okSx-0xejok
-
-### 🔹 2️⃣ Lisää uusi ateria käyttäjälle
-POST http://localhost:3000/api/meals
+### 3. Create a new FormQuestion (Admin only)
+POST http://localhost:3000/api/formQuestion/create
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTU0NTMwOSwiZXhwIjoxNzQxNTQ4OTA5fQ.leW5zT97Pg3yEB4yX26v-V_mAJv3kSI0okSx-0xejok
 
 {
-    "name": "Kana ja Riisi",
-    "calories": 600,
-    "protein": 50,
-    "carbs": 70,
-    "fat": 10,
-    "mealType": "Lounas",
-    "image": "https://example.com/image.jpg"
+  "question": "Mikä on paras liikuntamuoto?",
+  "answer": "Kuntosali"
 }
 
-### 🔹 3️⃣ Poista ateria (ID = 1)
-DELETE http://localhost:3000/api/meals/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoiTmloYWRAZ21haWwuY29tIiwidXNlcl9sZXZlbCI6ImN1c3RvbWVyIiwiaWF0IjoxNzQxNTIyNzMzLCJleHAiOjE3NDE1MjYzMzN9.UQUVz4uwwCNAD-0tazhIA1y5sRNduIN-K2w2_ma9im8
+###
+
+### 4. Get all FormQuestions
+GET http://localhost:3000/api/questions/
+Authorization: Bearer {{jwt_token}}
+
+###
+
+### 5. Update FormQuestion (Admin only)
+PUT http://localhost:3000/api/questions/update
+Authorization: Bearer {{jwt_token}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "question": "Mikä on tehokkain harjoitus?",
+  "answer": "Kyykky"
+}
+
+###
+
+### 6. Delete FormQuestion (Admin only)
+DELETE http://localhost:3000/api/questions/delete/1
+Authorization: Bearer {{jwt_token}}

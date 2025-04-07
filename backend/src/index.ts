@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import userroute from "./routes/userroute";
+import Questionroute from "./routes/formQuestionRoute";
 import { ErrorRequestHandler } from "express";
 
 const app = express();
@@ -9,6 +10,7 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 app.use("/api/user", userroute);
+app.use("/api/formQuestion", Questionroute);
 
 // Add a global error handler
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
