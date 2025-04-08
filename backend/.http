@@ -1,8 +1,11 @@
 # Profile get token kautta
 GET http://localhost:3000/api/user/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJhZG1pbiIsImlhdCI6MTc0MTU0NTMwOSwiZXhwIjoxNzQxNTQ4OTA5fQ.leW5zT97Pg3yEB4yX26v-V_mAJv3kSI0okSx-0xejok
+Content-Type: application/json
+Authorization: Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwidXNlcm5hbWUiOiJicnVubyIsImVtYWlsIjoiTmloYWRAZ21haWwuY29tIiwidXNlcl9sZXZlbCI6IkN1c3RvbWVyIiwiaWF0IjoxNzQ0MDIzOTg0LCJleHAiOjE3NDQxMTAzODR9.WKtWtnRzZ43lDrGIwzhjeFjhQItwHr2sHZ-2e6iyEFY"
+
 
 # Get users
+
 GET http://localhost:3000/api/user/users
 
 ###
@@ -12,8 +15,11 @@ POST http://localhost:3000/api/user/signup
 Content-Type: application/json
 
 {
-  "email": "example@example.com",
-  "password": "password123"
+  "name": "bruno",
+  "email": "Nihad@gmail.com",
+  "password": "Nihad2010#",
+  "confirm_password": "Nihad2010#",
+  "user_level": "Admin"
 }
 
 ###
@@ -23,8 +29,8 @@ POST http://localhost:3000/api/user/login
 Content-Type: application/json
 
 {
-  "name_email": "nihadazzam96@gmail.com",
-  "password": "12345"
+  "name_email": "saa",
+  "password": "Example1234#"
 }
 
 ###
@@ -51,35 +57,35 @@ Content-Type: application/json
 
 ### 3. Create a new FormQuestion (Admin only)
 POST http://localhost:3000/api/formQuestion/create
-Authorization: Bearer {{jwt_token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJOaWhhZCIsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJBZG1pbiIsImlhdCI6MTc0NDAyNTAzNCwiZXhwIjoxNzQ0MTExNDM0fQ.4Ki7rA-kWN-u2LbZe3wSv1gECjm3RYPPg39IOzZHsSE
 Content-Type: application/json
 
 {
-  "question": "Mikä on paras liikuntamuoto?",
-  "answer": "Kuntosali"
+  "Question": "Mikä on paras liikuntamuoto?",
+  "Answer": "Kuntosali"
 }
 
 ###
 
 ### 4. Get all FormQuestions
-GET http://localhost:3000/api/questions/
-Authorization: Bearer {{jwt_token}}
+GET http://localhost:3000/api/formQuestion/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJzYWEiLCJlbWFpbCI6ImV4YW1wbGVAZ21haWwuY29tIiwidXNlcl9sZXZlbCI6IkN1c3RvbWVyIiwiaWF0IjoxNzQ0MDI2NTkxLCJleHAiOjE3NDQxMTI5OTF9.6qooAC8FcmmJUqoewakqV4cU2nZ3HA0Z14ZiTJVUo7s
+Content-Type: application/json
 
-###
 
 ### 5. Update FormQuestion (Admin only)
-PUT http://localhost:3000/api/questions/update
-Authorization: Bearer {{jwt_token}}
+PUT http://localhost:3000/api/formQuestion/update
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJOaWhhZCIsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJBZG1pbiIsImlhdCI6MTc0NDAyNTAzNCwiZXhwIjoxNzQ0MTExNDM0fQ.4Ki7rA-kWN-u2LbZe3wSv1gECjm3RYPPg39IOzZHsSE
 Content-Type: application/json
 
 {
-  "id": 1,
-  "question": "Mikä on tehokkain harjoitus?",
-  "answer": "Kyykky"
+  "Id": 2,
+  "Question": "Mikä on tehokkain harjoitus?",
+  "Answer": "Kyykky"
 }
 
 ###
 
 ### 6. Delete FormQuestion (Admin only)
-DELETE http://localhost:3000/api/questions/delete/1
-Authorization: Bearer {{jwt_token}}
+DELETE http://localhost:3000/api/formQuestion/delete/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJOaWhhZCIsImVtYWlsIjoibmloYWRhenphbTk2QGdtYWlsLmNvbSIsInVzZXJfbGV2ZWwiOiJBZG1pbiIsImlhdCI6MTc0NDAyNTAzNCwiZXhwIjoxNzQ0MTExNDM0fQ.4Ki7rA-kWN-u2LbZe3wSv1gECjm3RYPPg39IOzZHsSE

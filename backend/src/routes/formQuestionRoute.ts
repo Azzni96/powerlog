@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticate, isAdmin } from '../utils/authenticate';
+import { authenticate, isCustomer, isAdmin } from '../utils/authenticate';
 
 import {
     createFormQuestionController,
@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.use(authenticate); // Apply authentication middleware to all routes
 router.post('/create', isAdmin, createFormQuestionController); 
-router.get('/', getFormQuestionsController);
+router.get('/', isCustomer, getFormQuestionsController);
 router.put('/update', isAdmin, updateFormQuestionController);
 router.delete('/delete/:id', isAdmin, deleteFormQuestionController); // Use isAdmin middleware for deletion
 

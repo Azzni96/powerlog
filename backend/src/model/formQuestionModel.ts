@@ -10,7 +10,7 @@ export type FormQuestion = {
 export const createFormQuestion = async (formQuestion: FormQuestion): Promise<void> => {
     const conn = await pool.getConnection();
     const result = await conn.query(
-        "INSERT INTO form_questions (Question, Answer) VALUES (?, ?)",
+        "INSERT INTO formquestions (Question, Answer) VALUES (?, ?)",
         [formQuestion.Question, formQuestion.Answer]
     );
     conn.release();
@@ -19,14 +19,14 @@ export const createFormQuestion = async (formQuestion: FormQuestion): Promise<vo
 
 export const getFormQuestions = async (): Promise<FormQuestion[]> => {
     const conn = await pool.getConnection();
-    const result = await conn.query("SELECT * FROM form_questions");
+    const result = await conn.query("SELECT * FROM formquestions");
     conn.release();
     return result;
 };
 
 export const deleteFormQuestionById = async (id: number): Promise<void> => {
     const conn = await pool.getConnection();
-    const result = await conn.query("DELETE FROM form_questions WHERE Id = ?", [id]);
+    const result = await conn.query("DELETE FROM formquestions WHERE Id = ?", [id]);
     conn.release();
     return result;
 };
@@ -34,7 +34,7 @@ export const deleteFormQuestionById = async (id: number): Promise<void> => {
 export const updateFormQuestion = async (formQuestion: FormQuestion): Promise<void> => {
     const conn = await pool.getConnection();
     const result = await conn.query(
-        "UPDATE form_questions SET Question = ?, Answer = ? WHERE Id = ?",
+        "UPDATE formquestions SET Question = ?, Answer = ? WHERE Id = ?",
         [formQuestion.Question, formQuestion.Answer, formQuestion.Id]
     );
     conn.release();

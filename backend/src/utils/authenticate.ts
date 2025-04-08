@@ -2,14 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
+
+
 dotenv.config();
 
 if (!process.env.JWT_SECRET) {
   throw new Error("SECRET_KEY is not set");
 }
 const JWT_SECRET = process.env.JWT_SECRET;
-
-// Add user property to Express.Request
 declare global {
   namespace Express {
     interface Request {
@@ -23,41 +23,35 @@ export const authenticate = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
-      res.status(401).json({ error: "No token provided" });
-      return;
-    }
-
-    // Extract token from Bearer format
-    const token = authHeader.split(" ")[1];
-
-    if (!token) {
-      res.status(401).json({ error: "Invalid token format" });
-      return;
-    }
-
-    // Verify token
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: number; email: string; user_level: string };
-    req.user = decoded;
-
-    next();
-  } catch (error) {
-    console.error("Token verification error:", error);
-    res.status(401).json({ error: "Invalid token" });
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    res.status(401).json({ error: "Token missing" });
+    return;
   }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: number; email: string; user_level: string };
+    (req as any).user = decoded;
+    next();
+    } catch (error) {
+    res.status(401).json({ error: "Token invalid" });
+    return;
+    }
 };
 
-export const isAdmin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  if (req.user?.user_level === "admin") {
+export const isAdmin = async ( req: Request, res: Response, next: NextFunction): Promise<void> => 
+{
+  if ((req as any).user.user_level === 'Admin') {
     next();
   } else {
     res.status(403).json({ error: "Forbidden" });
   }
-};
+}
+
+export const isCustomer = async ( req: Request, res: Response, next: NextFunction): Promise<void> => 
+  {
+    if ((req as any).user.user_level === 'Customer') {
+      next();
+    } else {
+      res.status(403).json({ error: "Forbidden" });
+    }
+  }
