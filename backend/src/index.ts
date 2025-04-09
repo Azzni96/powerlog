@@ -2,6 +2,11 @@ import express from "express";
 import cors from "cors";
 import userroute from "./routes/userroute";
 import Questionroute from "./routes/formQuestionRoute";
+import foodroute from "./routes/foodRoute";
+import  BmiModel  from "./routes/bmiRoute";
+import workoutsRoute from "./routes/workoutsRoute";
+import workoutFormRoute from "./routes/workoutFormRoute";
+import formAnswersRoute from "./routes/formAnswersRoute";
 import { ErrorRequestHandler } from "express";
 
 const app = express();
@@ -11,6 +16,11 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/user", userroute);
 app.use("/api/formQuestion", Questionroute);
+app.use("/api/food", foodroute);
+app.use("/api/bmi", BmiModel);
+app.use("/api/workouts", workoutsRoute);
+app.use("/api/workout-forms", workoutFormRoute);
+app.use("/api/answers", formAnswersRoute);
 
 // Add a global error handler
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

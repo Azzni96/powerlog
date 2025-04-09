@@ -1,10 +1,7 @@
 import e, {Request, Response} from 'express';
-import { createBmiEntry, getBmiEntriesByUser, deleteBmiEntryById } from '../model/bmimodel';
+import { createBmiEntry, getBmiEntriesByUser, deleteBmiEntryById } from '../model/bmiModel';
 
 
-import { authenticate } from '../utils/authenticate';
-import { isCustomer } from '../utils/authenticate';
-import { isAdmin } from '../utils/authenticate';
 
 export const createBmiEntryController = async (req: Request, res: Response) => {
     try {
