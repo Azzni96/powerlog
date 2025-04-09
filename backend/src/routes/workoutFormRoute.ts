@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticate, isAdmin } from "../utils/authenticate";
+import { authenticate, isAdmin } from "../middleware/authenticate";
 import {
   createWorkoutFormController,
   getWorkoutFormsController,

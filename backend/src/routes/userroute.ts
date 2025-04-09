@@ -8,7 +8,7 @@ import {
 } from "../controller/usercontroller";
 import { getUserById } from "../model/usermodel"; // Add this import
 
-import { authenticate } from "../utils/authenticate";
+import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 

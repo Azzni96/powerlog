@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createFood, getFoodByUser, deleteFoodById, updateFood} from "../model/foodmodel";
+import { createFood, getFoodByUser, deleteFoodById, updateFood} from "../model/foodModel";
 
 
 export const createFoodController = async (req: Request, res: Response) => {

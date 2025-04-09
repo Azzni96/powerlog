@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticate, isCustomer, isAdmin } from '../utils/authenticate';
+import { authenticate, isCustomer, isAdmin } from '../middleware/authenticate';
 import { createFoodController, getFoodByUserController, deleteFoodEntryController, updateFoodEntryController } from '../controller/foodController';
 
 const router = express.Router();

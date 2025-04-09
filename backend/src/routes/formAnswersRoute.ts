@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticate } from "../utils/authenticate";
+import { authenticate } from "../middleware/authenticate";
 import {
   createFormAnswerController,
   getAnswersByUserController

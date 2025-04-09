@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticate, isCustomer, isAdmin } from '../utils/authenticate';
+import { authenticate, isCustomer, isAdmin } from '../middleware/authenticate';
 
 import { createBmiEntryController, deleteBmiEntryController, getBmiEntriesController } from '../controller/bmiController';
 
