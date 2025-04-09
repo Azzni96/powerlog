@@ -1,10 +1,10 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 
-export default function AddMealScreen() {
+export default function CalorieTracker() {
   return (
     <View style={styles.container}>
-      <Text>AddMealScreen</Text>
+      <Text>Calorie tracker</Text>
     </View>
   );
 }

@@ -7,6 +7,11 @@ import ProfileScreen from '../screens/ProfileScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import {createStackNavigator} from '@react-navigation/stack';
+import CalorieTracker from '../screens/CalorieTracker.tsx';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import LiveWorkout from '../screens/LiveWorkout';
+import WorkoutHistory from '../screens/WorkoutHistory';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 // Create navigators
 const Tab = createBottomTabNavigator();
@@ -22,10 +27,17 @@ const TabScreen = () => {
         tabBarIcon: ({focused, color, size}) => {
           let iconName = '';
           if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
+            return <FontAwesome name="home" size={size} color={color} />;
           } else if (route.name === 'My Profile') {
-            iconName = focused ? 'person' : 'person-outline';
+            return <FontAwesome name="user" size={size} color={color} />;
+          } else if (route.name === 'Calories') {
+            return <FontAwesome name="fire" size={size} color={color} />;
+          } else if (route.name === 'Live Workout') {
+            return <FontAwesome name="plus" size={size} color={color} />;
+          } else if (route.name === 'History') {
+            return <FontAwesome5 name="dumbbell" size={size} color={color} />;
           }
+
           return <Icon name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: 'white',
@@ -34,6 +46,9 @@ const TabScreen = () => {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Calories" component={CalorieTracker} />
+      <Tab.Screen name="Live Workout" component={LiveWorkout} />
+      <Tab.Screen name="History" component={WorkoutHistory} />
       <Tab.Screen name="My Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
