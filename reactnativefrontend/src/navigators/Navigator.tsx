@@ -1,4 +1,3 @@
-import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {Icon} from '@rneui/themed';
@@ -7,7 +6,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import {createStackNavigator} from '@react-navigation/stack';
-import CalorieTracker from '../screens/CalorieTracker.tsx';
+import CalorieTracker from '../screens/CalorieTracker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LiveWorkout from '../screens/LiveWorkout';
 import WorkoutHistory from '../screens/WorkoutHistory';
