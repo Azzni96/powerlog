@@ -83,3 +83,22 @@ export const getUserProfile = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 };
+export const updateUserProfile = async (req: Request, res: Response) => {
+  try {
+    const user_id = (req as any).user?.id;
+    const { gender, age, height, weight, workout_days, calorie_target } = req.body;
+
+    await UserProfileModel.update(user_id, {
+      gender,
+      age,
+      height,
+      weight,
+      workout_days,
+      calorie_target,
+    });
+
+    res.status(200).json({ message: 'Profile updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+};

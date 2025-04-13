@@ -21,4 +21,19 @@ export const BmiModel = {
     conn.release();
     return result;
   },
+  update: async (id: number, data: { weight: number; height: number }) => {
+    const conn = await db.getConnection();
+    await conn.query(
+      `UPDATE BMI SET weight = ?, height = ? WHERE id = ?`,
+      [data.weight, data.height, id]
+    );
+    conn.release();
+  },
+  
+  delete: async (id: number) => {
+    const conn = await db.getConnection();
+    await conn.query(`DELETE FROM BMI WHERE id = ?`, [id]);
+    conn.release();
+  },
+  
 };

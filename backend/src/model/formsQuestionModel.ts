@@ -23,4 +23,27 @@ export const FormQuestionModel = {
     conn.release();
     return result;
   },
+  update: async (
+    id: number,
+    data: {
+      category: string;
+      question: string;
+      max: number;
+      answer: string;
+    }
+  ) => {
+    const conn = await db.getConnection();
+    await conn.query(
+      `UPDATE FormsQuestions SET category = ?, question = ?, max = ?, answer = ? WHERE id = ?`,
+      [data.category, data.question, data.max, data.answer, id]
+    );
+    conn.release();
+  },
+  
+  delete: async (id: number) => {
+    const conn = await db.getConnection();
+    await conn.query(`DELETE FROM FormsQuestions WHERE id = ?`, [id]);
+    conn.release();
+  },
+  
 };

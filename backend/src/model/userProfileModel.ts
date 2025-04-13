@@ -38,4 +38,21 @@ export const UserProfileModel = {
     conn.release();
     return result[0];
   },
+  update: async (user_id: number, data: {
+    gender: string;
+    age: number;
+    height: number;
+    weight: number;
+    workout_days: number;
+    calorie_target: number;
+  }) => {
+    const conn = await db.getConnection();
+    await conn.query(
+      `UPDATE User_Profiles SET gender = ?, age = ?, height = ?, weight = ?, workout_days = ?, calorie_target = ?
+       WHERE user_id = ?`,
+      [data.gender, data.age, data.height, data.weight, data.workout_days, data.calorie_target, user_id]
+    );
+    conn.release();
+  },
+  
 };

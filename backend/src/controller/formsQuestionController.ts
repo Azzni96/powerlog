@@ -19,3 +19,27 @@ export const createQuestion = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error creating question' });
   }
 };
+
+export const updateQuestion = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const { category, question, max, answer } = req.body;
+
+    await FormQuestionModel.update(id, { category, question, max, answer });
+
+    res.status(200).json({ message: 'Question updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update question' });
+  }
+};
+
+export const deleteQuestion = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    await FormQuestionModel.delete(id);
+    res.status(200).json({ message: 'Question deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete question' });
+  }
+};
+

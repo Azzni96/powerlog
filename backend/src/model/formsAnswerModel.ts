@@ -20,4 +20,16 @@ export const FormsAnswerModel = {
     conn.release();
     return result;
   },
+  update: async (id: number, answer_text: string) => {
+    const conn = await db.getConnection();
+    await conn.query(`UPDATE FormsAnswers SET answer_text = ? WHERE id = ?`, [answer_text, id]);
+    conn.release();
+  },
+  
+  delete: async (id: number) => {
+    const conn = await db.getConnection();
+    await conn.query(`DELETE FROM FormsAnswers WHERE id = ?`, [id]);
+    conn.release();
+  },
+  
 };
