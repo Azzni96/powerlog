@@ -21,24 +21,45 @@ export const authenticate = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    res.status(401).json({ error: "Token missing" });
-    return;
-  }
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: number; email: string; user_level: string };
-    (req as any).user = decoded;
-    next();
+   try {
+      const authHeader = req.headers.authorization;
+  
+      if (!authHeader) {
+        res.status(401).json({ error: "No token provided" });
+        return; // Don't return the response object, just return from function
+      }
+  
+      // Extract token from Bearer format
+      const token = authHeader.split(" ")[1];
+  
+      if (!token) {
+        res.status(401).json({ error: "Invalid token format" });
+        return; // Don't return the response object
+      }
+  
+      // Verify token
+      const decoded = jwt.verify(token, JWT_SECRET);
+      req.user = decoded;
+  
+      next(); // Call next to continue
     } catch (error) {
-    res.status(401).json({ error: "Token invalid" });
-    return;
+      console.error("Token verification error:", error);
+      res.status(401).json({ error: "Invalid token" });
+      // No return statement here
     }
 };
 
 export const isAdmin = async ( req: Request, res: Response, next: NextFunction): Promise<void> => 
 {
   if ((req as any).user.user_level === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ error: "Forbidden" });
+  }
+}
+export const isCostomer = async ( req: Request, res: Response, next: NextFunction): Promise<void> =>
+{
+  if ((req as any).user.user_level === 'customer') {
     next();
   } else {
     res.status(403).json({ error: "Forbidden" });
