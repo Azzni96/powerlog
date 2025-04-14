@@ -87,3 +87,17 @@ export const getUserByName = async (name: string) => {
     throw error;
   }
 };
+
+export const updateUser = async (user_id: number, data: {username: string; email: string}) => {
+  const conn = await pool.getConnection();
+  await conn.query(
+    "UPDATE users SET Username = ?, Email = ? WHERE Id = ?",
+    [data.username, data.email, user_id]
+  );
+  conn.release();
+}
+export const deleteUser = async (user_id: number) => {
+  const conn = await pool.getConnection();
+  await conn.query("DELETE FROM users WHERE Id = ?", [user_id]);
+  conn.release();
+}

@@ -5,9 +5,12 @@ import {
   forgotPassword,
   resetPassword,
   fetchUsers,
+  updateUserInfo,
+  deleteUserAccount
 } from "../controller/usercontroller";
 import { getUserById } from "../model/usermodel"; // Add this import
 import { verifyToken } from "../middleware/auth";
+import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 
@@ -59,4 +62,6 @@ const getProfile = async (req: Request, res: Response) => {
 // Then use it in your route
 router.get("/profile", verifyToken, getProfile);
 
+router.put("/me", authenticate, updateUserInfo);
+router.delete("/me", authenticate, deleteUserAccount);
 export default router;

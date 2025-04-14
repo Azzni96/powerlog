@@ -8,6 +8,8 @@ import {
   updateUserPassword,
   getUserById,
   getUserByName,
+  updateUser,
+  deleteUser
 } from "../model/usermodel";
 import { sendEmail } from "../utils/emailService";
 import dotenv from "dotenv";
@@ -210,3 +212,27 @@ export const getProfile = async (req: Request, res: Response) => {
     res.status(500).json({ error: (error as Error).message });
   }
 };
+
+export const updateUserInfo = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    const { username, email} = req.body;
+
+    await updateUser(userId, { username, email });
+    res.status(200).json({ message: "User information updated successfully" });
+  } catch (error) {
+    console.error("Error updating user information:", error);
+    res.status(500).json({ error: "Failed to update user information" });
+  }
+};
+
+export const deleteUserAccount = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    await deleteUser(userId);
+    res.status(200).json({ message: "User account deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user account:", error);
+    res.status(500).json({ error: "Failed to delete user account" });
+  }
+}
