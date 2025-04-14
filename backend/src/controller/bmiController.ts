@@ -1,5 +1,5 @@
 import e, { Request, Response } from 'express';
-import { BmiModel } from '../model/bmimodel';
+import { BmiModel } from '../model/bmiModel';
 
 export const getUserBmi = async (req: Request, res: Response) => {
   try {

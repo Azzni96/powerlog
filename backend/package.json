@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon  src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "setuplomake": "ts-node src/scripts/insertLomakeQuestions.ts",
+    "setupsql": "ts-node src/scripts/setupsql.ts"
   },
   "keywords": [],
   "author": "",
