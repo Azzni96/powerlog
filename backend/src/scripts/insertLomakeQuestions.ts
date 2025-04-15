@@ -29,7 +29,7 @@ const insertLomakeData = async () => {
 
     const answersMap = {
       1: ['Male', 'Female'],
-      5: ['Sedentary', 'Lightly Active', 'Active', 'Very Active'],
+      5: ['Low Activity', 'Lightly Active', 'Active', 'Very Active'],
       6: ['Lose Weight', 'Build Muscle', 'Stay Fit', 'Gain Energy', 'Improve Health'],
       7: ['Beginner', 'Intermediate', 'Advanced', 'Athlete'],
       8: ['Lose Fat', 'Build Muscle', 'Get Strong', 'Maintain'],

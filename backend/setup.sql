@@ -32,7 +32,9 @@ CREATE TABLE Users (
 -- 2. WorkoutForms Table
 CREATE TABLE WorkoutForms (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    workout_program VARCHAR(255) NOT NULL,
+    category VARCHAR(100),                        -- uusi: kategoria (esim. "PPL", "UPPER/LOWER", "FULLBODY")
+    workout_program VARCHAR(255) NOT NULL,        -- ohjelman nimi (esim. "Perusvoima 1")
+    exercise_name VARCHAR(255) NOT NULL,          -- uusi: yksittäisen liikkeen nimi (esim. "Kyykky", "Penkkipunnerrus")
     times_performed INT NOT NULL CHECK (times_performed >= 1 AND times_performed <= 100),
     weight_kg DECIMAL(5, 2) NOT NULL,
     sets ENUM('3X', '2X') NOT NULL,
@@ -45,12 +47,14 @@ CREATE TABLE WorkoutForms (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+
 -- 3. Workouts Table
 CREATE TABLE Workouts (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     workout_form_id INT,
     workout_program VARCHAR(255) NOT NULL,
+    exercise_name VARCHAR(255) NOT NULL,   
     times_performed INT NOT NULL CHECK (times_performed >= 1 AND times_performed <= 100),
     weight_kg DECIMAL(5, 2) NOT NULL,
     sets ENUM('3X', '2X') NOT NULL,
