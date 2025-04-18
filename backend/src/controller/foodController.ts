@@ -1,58 +1,67 @@
-import { Request, Response } from 'express';
-import { FoodModel } from '../model/foodModel';
+import { Request, Response } from "express";
+import {
+  getFoodEntries,
+  createFoodEntry,
+  updateFoodEntry,
+  deleteFoodEntry,
+} from "../model/foodModel";
 
-export const getUserMeals = async (req: Request, res: Response) => {
+// GET: all food logs
+export const fetchFood = async (req: Request, res: Response) => {
   try {
-    const user_id = (req as any).user?.id;
-    const meals = await FoodModel.getByUserId(user_id);
-    res.status(200).json(meals);
+    const userId = (req as any).user.id;
+    const entries = await getFoodEntries(userId);
+    res.status(200).json(entries);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch meals' });
+    console.error("Error fetching food:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-export const addMeal = async (req: Request, res: Response) => {
+// POST: create food log
+export const addFood = async (req: Request, res: Response) => {
   try {
-    const user_id = (req as any).user?.id;
+    const userId = (req as any).user.id;
     const { meals_per_day, meal_time, meal_type, details } = req.body;
 
-    if (!meals_per_day || !meal_time || !meal_type || !details) {
-       res.status(400).json({ error: 'Missing meal data' });
-    }
+    await createFoodEntry(userId, meals_per_day, meal_time, meal_type, details);
+    res.status(201).json({ message: "Meal added" });
+  } catch (error) {
+    console.error("Error adding food:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
-    await FoodModel.addMeal({
-      user_id,
+// PUT: update food
+export const editFood = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    const foodId = parseInt(req.params.id);
+    const { meals_per_day, meal_time, meal_type, details } = req.body;
+
+    await updateFoodEntry(foodId, userId, {
       meals_per_day,
       meal_time,
       meal_type,
       details,
     });
 
-    res.status(201).json({ message: 'Meal added successfully' });
+    res.status(200).json({ message: "Meal updated" });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to add meal' });
+    console.error("Error updating food:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
-export const updateMeal = async (req: Request, res: Response) => {
-    try {
-      const mealId = Number(req.params.id);
-      const { meals_per_day, meal_time, meal_type, details } = req.body;
-  
-      await FoodModel.updateMeal(mealId, { meals_per_day, meal_time, meal_type, details });
-  
-      res.status(200).json({ message: 'Meal updated successfully' });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to update meal' });
-    }
-  };
 
-export const deleteMeal = async (req: Request, res: Response) => {
-try {
-    const mealId = Number(req.params.id);
-    await FoodModel.deleteMeal(mealId);
-    res.status(200).json({ message: 'Meal deleted successfully' });
-} catch (error) {
-    res.status(500).json({ error: 'Failed to delete meal' });
-}
+// DELETE
+export const removeFood = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    const foodId = parseInt(req.params.id);
+    await deleteFoodEntry(foodId, userId);
+    res.status(200).json({ message: "Meal deleted" });
+  } catch (error) {
+    console.error("Error deleting food:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 };
-  

@@ -1,12 +1,17 @@
-import express from 'express';
-import { getUserMeals, addMeal, updateMeal, deleteMeal } from '../controller/foodController';
-import { authenticate } from '../middleware/authenticate';
+import express from "express";
+import {
+  fetchFood,
+  addFood,
+  editFood,
+  removeFood
+} from "../controller/foodController";
+import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 
-router.get('/', authenticate, getUserMeals);
-router.post('/', authenticate, addMeal);
-router.put('/:id', authenticate, updateMeal);
-router.delete('/:id', authenticate, deleteMeal);
+router.get("/food", authenticate, fetchFood);
+router.post("/food", authenticate, addFood);
+router.put("/food/:id", authenticate, editFood);
+router.delete("/food/:id", authenticate, removeFood);
 
 export default router;

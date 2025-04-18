@@ -1,12 +1,17 @@
-import express from 'express';
-import { getUserBmi, createBmi, updateBmi, deleteBmi } from '../controller/bmiController';
-import { authenticate } from '../middleware/authenticate';
+import express from "express";
+import {
+  fetchAllBMI,
+  fetchLatestBMI,
+  addBMI,
+  deleteBMIRecord,
+} from "../controller/bmiController";
+import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 
-router.get('/', authenticate, getUserBmi);
-router.post('/', authenticate, createBmi);
-router.put('/:id', authenticate, updateBmi);   // ✅ Update
-router.delete('/:id', authenticate, deleteBmi); // ✅ Delete
+router.get("/bmi", authenticate, fetchAllBMI);
+router.get("/bmi/latest", authenticate, fetchLatestBMI);
+router.post("/bmi", authenticate, addBMI);
+router.delete("/bmi/:id", authenticate, deleteBMIRecord);
 
 export default router;

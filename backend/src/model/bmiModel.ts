@@ -1,39 +1,44 @@
-import db from '../database/db';
+import pool from "../database/db";
 
-export const BmiModel = {
-  getByUserId: async (user_id: number) => {
-    const conn = await db.getConnection();
-    const result = await conn.query(
-      'SELECT id, weight, height, bmi_value, created_at FROM BMI WHERE user_id = ? ORDER BY created_at DESC',
-      [user_id]
-    );
-    conn.release();
-    return result;
-  },
+// Get all BMI records
+export const getAllBMI = async (userId: number) => {
+  const conn = await pool.getConnection();
+  const [rows] = await conn.query(
+    "SELECT * FROM BMI WHERE user_id = ? ORDER BY created_at DESC",
+    [userId]
+  );
+  conn.release();
+  return rows;
+};
 
-  create: async (data: { user_id: number; weight: number; height: number }) => {
-    const conn = await db.getConnection();
-    const result = await conn.query(
-      `INSERT INTO BMI (user_id, weight, height)
-       VALUES (?, ?, ?)`,
-      [data.user_id, data.weight, data.height]
-    );
-    conn.release();
-    return result;
-  },
-  update: async (id: number, data: { weight: number; height: number }) => {
-    const conn = await db.getConnection();
-    await conn.query(
-      `UPDATE BMI SET weight = ?, height = ? WHERE id = ?`,
-      [data.weight, data.height, id]
-    );
-    conn.release();
-  },
-  
-  delete: async (id: number) => {
-    const conn = await db.getConnection();
-    await conn.query(`DELETE FROM BMI WHERE id = ?`, [id]);
-    conn.release();
-  },
-  
+// Get latest BMI
+export const getLatestBMI = async (userId: number) => {
+  const conn = await pool.getConnection();
+  const [rows] = await conn.query(
+    "SELECT * FROM BMI WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
+    [userId]
+  );
+  conn.release();
+  return rows[0];
+};
+
+// Create new BMI record (weight + height only)
+export const createBMIRecord = async (
+  userId: number,
+  weight: number,
+  height: number
+) => {
+  const conn = await pool.getConnection();
+  await conn.query(
+    "INSERT INTO BMI (user_id, weight, height) VALUES (?, ?, ?)",
+    [userId, weight, height]
+  );
+  conn.release();
+};
+
+// Delete specific BMI entry
+export const deleteBMI = async (bmiId: number, userId: number) => {
+  const conn = await pool.getConnection();
+  await conn.query("DELETE FROM BMI WHERE id = ? AND user_id = ?", [bmiId, userId]);
+  conn.release();
 };

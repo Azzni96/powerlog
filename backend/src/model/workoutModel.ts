@@ -1,74 +1,72 @@
-import db from '../database/db';
+import pool from "../database/db";
 
-export const WorkoutModel = {
-  getByUserId: async (user_id: number) => {
-    const conn = await db.getConnection();
-    const result = await conn.query(
-      `SELECT w.*, f.video, f.photo 
-       FROM Workouts w 
-       JOIN WorkoutForms f ON w.workout_form_id = f.Id 
-       WHERE w.user_id = ?`,
-      [user_id]
-    );
-    conn.release();
-    return result;
-  },
+// Get workouts for a user (optional filter by is_done)
+export const getWorkouts = async (userId: number, isDone?: string) => {
+  const conn = await pool.getConnection();
+  let query = "SELECT * FROM Workouts WHERE user_id = ?";
+  const params: any[] = [userId];
 
-  assignWorkout: async (data: {
-    user_id: number;
-    workout_form_id: number;
-    workout_program: string;
-    times_performed: number;
-    weight_kg: number;
-    sets: '3X' | '2X';
-    description?: string;
-    duration_minutes?: number;
-    difficulty?: 'easy' | 'medium' | 'hard';
-    video?: string;
-    photo?: string;
-  }) => {
-    const conn = await db.getConnection();
-    const result = await conn.query(
-      `INSERT INTO Workouts 
-        (user_id, workout_form_id, workout_program, times_performed, weight_kg, sets, description, duration_minutes, difficulty, video, photo)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        data.user_id,
-        data.workout_form_id,
-        data.workout_program,
-        data.times_performed,
-        data.weight_kg,
-        data.sets,
-        data.description,
-        data.duration_minutes,
-        data.difficulty,
-        data.video,
-        data.photo,
-      ]
-    );
-    conn.release();
-    return result;
-  },
-  updateAsDone: async (workout_id: number) => {
-    const conn = await db.getConnection();
-    const result = await conn.query(
-      `UPDATE Workouts 
-       SET is_done = 'yes', completion_time = CURRENT_TIMESTAMP 
-       WHERE Id = ?`,
-      [workout_id]
-    );
-    conn.release();
-    return result;
-  },  
-  updateAsNotDone: async (workout_id: number) => {
-    const conn = await db.getConnection();
-    const result = await conn.query(
-      `UPDATE Workouts 
-       SET is_done = 'no', completion_time = NULL 
-       WHERE Id = ?`,
-      [workout_id]
-    );
-    conn.release();
-    return result;
-  },  
+  if (isDone) {
+    query += " AND is_done = ?";
+    params.push(isDone);
+  }
+
+  const [rows] = await conn.query(query, params);
+  conn.release();
+  return rows;
+};
+
+// Create workouts for a user from selected WorkoutForms
+export const assignWorkouts = async (userId: number, workoutFormIds: number[]) => {
+  const conn = await pool.getConnection();
+
+  for (const formId of workoutFormIds) {
+    const [rows] = await conn.query("SELECT * FROM WorkoutForms WHERE Id = ?", [formId]);
+    const wf = rows[0];
+    if (wf) {
+      await conn.query(
+        `INSERT INTO Workouts (
+          user_id, workout_form_id, workout_program, exercise_name,
+          times_performed, weight_kg, sets, description,
+          duration_minutes, difficulty, video, photo
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          userId,
+          wf.Id,
+          wf.workout_program,
+          wf.exercise_name,
+          wf.times_performed,
+          wf.weight_kg,
+          wf.sets,
+          wf.description,
+          wf.duration_minutes,
+          wf.difficulty,
+          wf.video,
+          wf.photo,
+        ]
+      );
+    }
+  }
+
+  conn.release();
+};
+
+// Mark workout as done
+export const markWorkoutDone = async (userId: number, workoutId: number) => {
+  const conn = await pool.getConnection();
+  await conn.query(
+    `UPDATE Workouts SET is_done = 'yes', completion_time = NOW() WHERE Id = ? AND user_id = ?`,
+    [workoutId, userId]
+  );
+  conn.release();
+};
+
+// Delete workout
+export const deleteWorkout = async (userId: number, workoutId: number) => {
+  const conn = await pool.getConnection();
+  await conn.query("DELETE FROM Workouts WHERE Id = ? AND user_id = ?", [
+    workoutId,
+    userId,
+  ]);
+  conn.release();
 };

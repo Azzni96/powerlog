@@ -17,17 +17,19 @@ const insertLomakeData = async () => {
       ['Feedback', 'How do you rate your experience?', 1, 'select']
     ];
 
-    const insertedIds = [];
+    const questionIds: number[] = [];
 
+    // 1. Insert questions
     for (const q of questions) {
-      const result = await conn.query(
+      const [result]: any = await conn.query(
         'INSERT INTO FormsQuestions (category, question, max, answer) VALUES (?, ?, ?, ?)',
         q
       );
-      insertedIds.push(result.insertId);
+      questionIds.push(result.insertId);
     }
 
-    const answersMap = {
+    // 2. Insert predefined choices for some questions
+    const choicesMap = {
       1: ['Male', 'Female'],
       5: ['Low Activity', 'Lightly Active', 'Active', 'Very Active'],
       6: ['Lose Weight', 'Build Muscle', 'Stay Fit', 'Gain Energy', 'Improve Health'],
@@ -37,17 +39,19 @@ const insertLomakeData = async () => {
       10: ['Excellent', 'Good', 'Average', 'Poor', 'Very Poor']
     };
 
-    for (const [qIndex, options] of Object.entries(answersMap)) {
-      const questionId = insertedIds[Number(qIndex) - 1];
-      for (const answer of options) {
+    for (const [index, choices] of Object.entries(choicesMap)) {
+      const questionIndex = parseInt(index) - 1;
+      const questionId = questionIds[questionIndex];
+
+      for (const choice of choices) {
         await conn.query(
-          'INSERT INTO FormsAnswers (question_id, answer_text) VALUES (?, ?)',
-          [questionId, answer]
+          'INSERT INTO Form_Choices (question_id, answer_text) VALUES (?, ?)',
+          [questionId, choice]
         );
       }
     }
 
-    console.log('✅ LOMAKE questions and answers inserted successfully.');
+    console.log('✅ LOMAKE questions and choices inserted successfully.');
   } catch (err) {
     console.error('❌ Error inserting LOMAKE:', err);
   } finally {

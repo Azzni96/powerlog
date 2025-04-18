@@ -1,61 +1,57 @@
-import e, { Request, Response } from 'express';
-import { BmiModel } from '../model/bmiModel';
+import { Request, Response } from "express";
+import {
+  getAllBMI,
+  getLatestBMI,
+  createBMIRecord,
+  deleteBMI,
+} from "../model/bmiModel";
 
-export const getUserBmi = async (req: Request, res: Response) => {
+// GET all BMI entries
+export const fetchAllBMI = async (req: Request, res: Response) => {
   try {
-    const user_id = (req as any).user?.id;
-    const bmiData = await BmiModel.getByUserId(user_id);
-    res.status(200).json(bmiData);
+    const userId = (req as any).user.id;
+    const entries = await getAllBMI(userId);
+    res.status(200).json(entries);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch BMI records' });
+    console.error("Error fetching BMI:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-export const createBmi = async (req: Request, res: Response) => {
+// GET latest BMI only
+export const fetchLatestBMI = async (req: Request, res: Response) => {
   try {
-    const user_id = (req as any).user?.id;
+    const userId = (req as any).user.id;
+    const latest = await getLatestBMI(userId);
+    res.status(200).json(latest);
+  } catch (error) {
+    console.error("Error fetching latest BMI:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// POST create BMI (Frontend does calculation, backend just stores)
+export const addBMI = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
     const { weight, height } = req.body;
-
-    if (!weight || !height) {
-       res.status(400).json({ error: 'Missing weight or height' });
-    }
-
-    await BmiModel.create({ user_id, weight, height });
-
-    // Calculate BMI value
-    const bmi_value = Number((weight / (height * height)).toFixed(2));
-
-    res.status(201).json({
-      message: 'BMI recorded successfully',
-      data: { weight, height, bmi_value },
-    });
+    await createBMIRecord(userId, weight, height);
+    res.status(201).json({ message: "BMI record created successfully" });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to record BMI' });
+    console.error("Error adding BMI:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
-export const updateBmi = async (req: Request, res: Response) => {
-    try {
-      const bmiId = Number(req.params.id);
-      const { weight, height } = req.body;
-  
-      await BmiModel.update(bmiId, { weight, height });
-  
-      const bmi = Number((weight / (height * height)).toFixed(2));
-      res.status(200).json({
-        message: 'BMI updated successfully',
-        data: { weight, height, bmi },
-      });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to update BMI' });
-    }
-  };
-  
-  export const deleteBmi = async (req: Request, res: Response) => {
-    try {
-      const bmiId = Number(req.params.id);
-      await BmiModel.delete(bmiId);
-      res.status(200).json({ message: 'BMI deleted successfully' });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to delete BMI' });
-    }
-  };
+
+// DELETE
+export const deleteBMIRecord = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    const bmiId = parseInt(req.params.id);
+    await deleteBMI(bmiId, userId);
+    res.status(200).json({ message: "BMI entry deleted" });
+  } catch (error) {
+    console.error("Error deleting BMI:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
