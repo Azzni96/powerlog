@@ -37,12 +37,15 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 app.use(errorHandler);
 
 // Add a test endpoint to verify basic functionality
+
 app.get("/api/test", (req, res) => {
   res.json({ message: "API is working" });
 });
-
+if (process.env.NODE_ENV !== 'test'){
 app.listen(port, "0.0.0.0", () => {
   console.log(
     `Server running on port ${port} and accessible from all interfaces`
   );
 });
+}
+export default app;

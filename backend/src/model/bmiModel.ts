@@ -3,7 +3,7 @@ import pool from "../database/db";
 // Get all BMI records
 export const getAllBMI = async (userId: number) => {
   const conn = await pool.getConnection();
-  const [rows] = await conn.query(
+  const rows = await conn.query(
     "SELECT * FROM BMI WHERE user_id = ? ORDER BY created_at DESC",
     [userId]
   );
@@ -14,7 +14,7 @@ export const getAllBMI = async (userId: number) => {
 // Get latest BMI
 export const getLatestBMI = async (userId: number) => {
   const conn = await pool.getConnection();
-  const [rows] = await conn.query(
+  const rows = await conn.query(
     "SELECT * FROM BMI WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
     [userId]
   );

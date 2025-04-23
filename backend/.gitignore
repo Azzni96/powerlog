@@ -1,4 +1,5 @@
-# Logs
+# -----------------------------------------
+# Logs & debug
 logs
 *.log
 npm-debug.log*
@@ -7,23 +8,60 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+package-lock.json
+*/package.json
 
-# Editor directories and files
-.vscode/*
+
+# -----------------------------------------
+# Runtime & build artifacts
+node_modules/
+dist/
+build/
+out/
+.cache/
+coverage/
+.temp/
+*.tsbuildinfo
+
+# -----------------------------------------
+# Environment files (sensitive)
+.env
+.env.*
+!.env.example
+
+# -----------------------------------------
+# Uploads & generated content
+uploads/
+uploads/*
+
+# -----------------------------------------
+# IDE/editor config
+.vscode/
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-.env 
-.env.local
-uploads
-uploads/*
+# -----------------------------------------
+# Mac/Windows system files
+.DS_Store
+Thumbs.db
+
+# -----------------------------------------
+# Jest test cache & reports
+jest.config.js
+coverage/
+*.lcov
+
+# -----------------------------------------
+# PM2 process file
+ecosystem.config.js
+
+# -----------------------------------------
+# Others
+*.local
+*.log.*
+
