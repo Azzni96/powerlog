@@ -21,11 +21,11 @@ const insertLomakeData = async () => {
 
     // 1. Insert questions
     for (const q of questions) {
-      const [result]: any = await conn.query(
+      const result: any = await conn.query(
         'INSERT INTO FormsQuestions (category, question, max, answer) VALUES (?, ?, ?, ?)',
         q
       );
-      questionIds.push(result.insertId);
+      questionIds.push(result.insertId); // Ensure insertId is correctly retrieved
     }
 
     // 2. Insert predefined choices for some questions
