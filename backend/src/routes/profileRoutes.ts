@@ -9,9 +9,9 @@ import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 
-router.get("/profile", authenticate, getUserProfile);
-router.post("/profile", authenticate, createUserProfile);
-router.put("/profile", authenticate, updateUserProfile);
-router.delete("/profile", authenticate, deleteUserProfile);
+router.get("/", authenticate, getUserProfile);
+router.post("/", authenticate, createUserProfile);
+router.put("/", authenticate, updateUserProfile);
+router.delete("/", authenticate, deleteUserProfile);
 
 export default router;

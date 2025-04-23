@@ -9,9 +9,9 @@ import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 
-router.get("/workouts", authenticate, fetchWorkouts);
-router.post("/workouts", authenticate, assignUserWorkouts);
-router.put("/workouts/:id/done", authenticate, completeWorkout);
-router.delete("/workouts/:id", authenticate, removeWorkout);
+router.get("/", authenticate, fetchWorkouts);
+router.post("/", authenticate, assignUserWorkouts);
+router.put("/:id/done", authenticate, completeWorkout);
+router.delete("/:id", authenticate, removeWorkout);
 
 export default router;

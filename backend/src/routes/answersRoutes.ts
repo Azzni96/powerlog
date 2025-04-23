@@ -8,8 +8,8 @@ import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 
-router.get("/user-answers", authenticate, fetchAnswers);
-router.post("/user-answers", authenticate, submitAnswers);
-router.delete("/user-answers", authenticate, clearAnswers);
+router.get("/", authenticate, fetchAnswers);
+router.post("/", authenticate, submitAnswers);
+router.delete("/", authenticate, clearAnswers);
 
 export default router;
