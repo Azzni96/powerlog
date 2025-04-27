@@ -20,7 +20,14 @@ export const fetchWorkoutForms = async (req: Request, res: Response) => {
 // POST create new workout form
 export const addWorkoutForm = async (req: Request, res: Response) => {
   try {
-    const id = await createWorkoutForm(req.body);
+    const file = req.file ? req.file.filename : null;
+
+    const workoutData = {
+      ...req.body,
+      photo: file?.match(/\.(jpg|jpeg|png|gif)$/) ? file : null,
+      video: file?.match(/\.(mp4|avi|mkv)$/) ? file : null
+    };
+    const id = await createWorkoutForm(workoutData);
     res.status(201).json({ message: "Workout form created", id });
   } catch (error) {
     console.error("Error adding workout form:", error);
@@ -32,7 +39,15 @@ export const addWorkoutForm = async (req: Request, res: Response) => {
 export const modifyWorkoutForm = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    await updateWorkoutForm(id, req.body);
+    const file = req.file ? req.file.filename : null;
+
+    const workoutData = {
+      ...req.body,
+      photo: file?.match(/\.(jpg|jpeg|png|gif)$/) ? file : null,
+      video: file?.match(/\.(mp4|avi|mkv)$/) ? file : null
+    };
+
+    await updateWorkoutForm(id, workoutData);
     res.status(200).json({ message: "Workout form updated" });
   } catch (error) {
     console.error("Error updating workout form:", error);
