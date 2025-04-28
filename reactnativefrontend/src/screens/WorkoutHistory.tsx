@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -5,22 +7,48 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 const WorkoutHistory = ({navigation}) => {
+  const [workouts, setWorkouts] = useState([]);
+
+  // Load workouts when component mounts
+  useEffect(() => {
+    const loadWorkouts = async () => {
+      try {
+        const workoutsJSON = await AsyncStorage.getItem('workouts');
+        if (workoutsJSON) {
+          setWorkouts(JSON.parse(workoutsJSON));
+        }
+      } catch (error) {
+        console.error('Error loading workouts:', error);
+      }
+    };
+
+    loadWorkouts();
+
+    // Add a listener to reload data when the screen comes into focus
+    const unsubscribe = navigation.addListener('focus', loadWorkouts);
+    return unsubscribe;
+  }, [navigation]);
+
+  // Format time from milliseconds
+  const formatTime = (ms) => {
+    const seconds = Math.floor((ms / 1000) % 60);
+    const minutes = Math.floor((ms / 60000) % 60);
+    const hours = Math.floor(ms / 3600000);
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' at ' + date.toLocaleTimeString();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Top button */}
-
-      {/* Workout data container */}
-      <View style={styles.workoutContainer}>
-        <Text style={styles.header}>Workout History</Text>
-        <ScrollView style={styles.workoutScrollView}>
-          <Text style={styles.text}>Your workout history will appear here</Text>
-          {/* Placeholder for workout history items */}
-        </ScrollView>
-      </View>
       <TouchableOpacity
         style={styles.topButton}
         onPress={() => navigation.navigate('Live Workout')}
@@ -28,16 +56,39 @@ const WorkoutHistory = ({navigation}) => {
         <Text style={styles.buttonText}>Start Workout</Text>
       </TouchableOpacity>
 
+      {/* Workout data container */}
+      <View style={styles.workoutContainer}>
+        <Text style={styles.header}>Workout History</Text>
+        <ScrollView style={styles.workoutScrollView}>
+          {workouts.length === 0 ? (
+            <Text style={styles.text}>
+              No workout history yet. Start a workout!
+            </Text>
+          ) : (
+            workouts.map((workout) => (
+              <View key={workout.id} style={styles.workoutItem}>
+                <Text style={styles.workoutDate}>
+                  {formatDate(workout.date)}
+                </Text>
+                <Text style={styles.workoutDuration}>
+                  Duration: {formatTime(workout.duration)}
+                </Text>
+                <Text style={styles.exercisesHeader}>Exercises:</Text>
+                {workout.exercises.map((exercise) => (
+                  <Text key={exercise.id} style={styles.exerciseText}>
+                    • {exercise.name} ({exercise.muscle})
+                  </Text>
+                ))}
+              </View>
+            ))
+          )}
+        </ScrollView>
+      </View>
+
       {/* Streak counter */}
       <View style={styles.streakContainer}>
         <Text style={styles.subHeader}>Current Streak</Text>
         <Text style={styles.streakText}>5 days 🔥</Text>
-      </View>
-
-      {/* Next training day */}
-      <View style={styles.nextTrainingContainer}>
-        <Text style={styles.subHeader}>Next Recommended Training</Text>
-        <Text style={styles.text}>Tomorrow - Leg Day</Text>
       </View>
     </SafeAreaView>
   );
@@ -73,12 +124,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
   },
-  nextTrainingContainer: {
-    backgroundColor: '#000000',
-    borderRadius: 10,
-    padding: 16,
-    alignItems: 'center',
-  },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -105,6 +150,35 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#00D0FF',
+  },
+  workoutItem: {
+    backgroundColor: '#333',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  workoutDate: {
+    color: '#00D0FF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  workoutDuration: {
+    color: 'white',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  exercisesHeader: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+  exerciseText: {
+    color: 'white',
+    fontSize: 14,
+    paddingLeft: 10,
+    marginTop: 2,
   },
 });
 

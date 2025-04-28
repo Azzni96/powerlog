@@ -6,9 +6,11 @@ import {
   Modal,
   TextInput,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LiveWorkout = () => {
   const [timer, setTimer] = useState(0);
@@ -22,6 +24,38 @@ const LiveWorkout = () => {
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const saveWorkoutData = async () => {
+    try {
+      const workoutData = {
+        id: Date.now().toString(),
+        date: new Date().toISOString(),
+        duration: timer,
+        exercises: selectedExercises,
+      };
+
+      const existingWorkoutsJSON = await AsyncStorage.getItem('workouts');
+      const existingWorkouts = existingWorkoutsJSON
+        ? JSON.parse(existingWorkoutsJSON)
+        : [];
+
+      // Add the new workout data to the existing workouts
+      const updatedWorkouts = [...existingWorkouts, workoutData];
+      // Save the updated workouts back to AsyncStorage
+      await AsyncStorage.setItem('workouts', JSON.stringify(updatedWorkouts));
+
+      // First stop the timer and clear the interval
+      setIsRunning(false);
+      setIsPaused(false);
+
+      // Use setTimeout to ensure the interval is cleared before resetting the timer
+      setTimeout(() => {
+        setTimer(0);
+        setSelectedExercises([]);
+      }, 50);
+    } catch (error) {
+      console.error('Error saving workout data:', error);
+    }
+  };
   // Mock exercise data - replace with API call to your backend
   const mockExercises = [
     {id: 1, name: 'Bench Press', muscle: 'Chest'},
@@ -133,19 +167,23 @@ const LiveWorkout = () => {
       {/* Selected exercises list */}
       {selectedExercises.length > 0 && (
         <View style={styles.exerciseList}>
-          <Text style={styles.subHeader}>Current Exercises</Text>
-          <TouchableOpacity
-            style={styles.resetExercisesButton}
-            onPress={resetExerciseList}
-          >
-            <Text style={styles.buttonText}>Reset Exercises</Text>
-          </TouchableOpacity>
-          {selectedExercises.map((exercise) => (
-            <View key={exercise.id} style={styles.exerciseItem}>
-              <Text style={styles.exerciseName}>{exercise.name}</Text>
-              <Text style={styles.exerciseMuscle}>{exercise.muscle}</Text>
-            </View>
-          ))}
+          <View style={styles.exerciseListHeader}>
+            <Text style={styles.subHeader}>Current Exercises</Text>
+            <TouchableOpacity
+              style={styles.resetExercisesButton}
+              onPress={resetExerciseList}
+            >
+              <Text style={styles.smallButtonText}>Reset</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.exerciseScroll}>
+            {selectedExercises.map((exercise) => (
+              <View key={exercise.id} style={styles.exerciseItem}>
+                <Text style={styles.exerciseName}>{exercise.name}</Text>
+                <Text style={styles.exerciseMuscle}>{exercise.muscle}</Text>
+              </View>
+            ))}
+          </ScrollView>
         </View>
       )}
 
@@ -196,6 +234,9 @@ const LiveWorkout = () => {
           </View>
         </View>
       </Modal>
+      <TouchableOpacity style={styles.saveButton} onPress={saveWorkoutData}>
+        <Text style={styles.buttonText}>Save Workout</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -252,6 +293,14 @@ const styles = StyleSheet.create({
     width: '45%',
     alignItems: 'center',
   },
+  saveButton: {
+    backgroundColor: 'limegreen',
+    padding: 15,
+    marginTop: 25,
+    borderRadius: 8,
+    width: '45%',
+    alignItems: 'center',
+  },
   buttonBlue: {
     backgroundColor: '#00D0FF',
     padding: 15,
@@ -263,6 +312,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  smallButtonText: {
+    color: '#fff',
+    fontSize: 14,
     fontWeight: 'bold',
   },
   header: {
@@ -285,6 +339,15 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#000',
     borderRadius: 10,
+  },
+  exerciseListHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  exerciseScroll: {
+    maxHeight: 200, // Fixed height for scrolling
   },
   exerciseItem: {
     flexDirection: 'row',
