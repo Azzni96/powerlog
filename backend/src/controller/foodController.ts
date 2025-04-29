@@ -5,6 +5,7 @@ import {
   updateFoodEntry,
   deleteFoodEntry,
 } from "../model/foodModel";
+import axios from "axios";
 
 // GET: all food logs
 export const fetchFood = async (req: Request, res: Response) => {
@@ -63,5 +64,59 @@ export const removeFood = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error deleting food:", error);
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const searchNutritionixFood = async (req: Request, res: Response) => {
+  try {
+    const { query } = req.body;
+
+    if (!query || query.trim() === "") {
+      return res.status(400).json({ error: "Search query is required" });
+    }
+
+    const response = await axios.post(
+      "https://trackapi.nutritionix.com/v2/search/instant",
+      { query, detailed: true },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-app-id": process.env.NUTRITIONIX_APP_ID,
+          "x-app-key": process.env.NUTRITIONIX_API_KEY,
+        },
+      }
+    );
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("Error searching food:", error);
+    res.status(500).json({ error: "Failed to search foods" });
+  }
+};
+
+export const getNutritionInfo = async (req: Request, res: Response) => {
+  try {
+    const { foodName } = req.body;
+
+    if (!foodName || foodName.trim() === "") {
+      return res.status(400).json({ error: "Food name is required" });
+    }
+
+    const response = await axios.post(
+      "https://trackapi.nutritionix.com/v2/natural/nutrients",
+      { query: foodName },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-app-id": process.env.NUTRITIONIX_APP_ID,
+          "x-app-key": process.env.NUTRITIONIX_API_KEY,
+        },
+      }
+    );
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("Error getting nutrition info:", error);
+    res.status(500).json({ error: "Failed to get nutrition information" });
   }
 };

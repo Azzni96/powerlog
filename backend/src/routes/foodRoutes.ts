@@ -3,7 +3,9 @@ import {
   fetchFood,
   addFood,
   editFood,
-  removeFood
+  removeFood,
+  searchNutritionixFood,
+  getNutritionInfo,
 } from "../controller/foodController";
 import { authenticate } from "../middleware/authenticate";
 
@@ -13,5 +15,8 @@ router.get("/", authenticate, fetchFood);
 router.post("/", authenticate, addFood);
 router.put("/:id", authenticate, editFood);
 router.delete("/:id", authenticate, removeFood);
+
+router.post("/search", authenticate, searchNutritionixFood);
+router.post("/nutrition/:foodId", authenticate, getNutritionInfo);
 
 export default router;
