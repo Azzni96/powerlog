@@ -7,7 +7,11 @@
     "ts-jest": "^29.3.2"
   },
   "dependencies": {
+<<<<<<< HEAD
     "react": "^19.1.0",
     "react-native": "^0.79.1"
+=======
+    "react-native-stopwatch-timer": "^0.0.21"
+>>>>>>> 69f7c4ebc09b0b952100d806cd122d990a8536df
   }
 }
