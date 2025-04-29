@@ -49,12 +49,6 @@ const WorkoutHistory = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Top button */}
-      <TouchableOpacity
-        style={styles.topButton}
-        onPress={() => navigation.navigate('Live Workout')}
-      >
-        <Text style={styles.buttonText}>Start Workout</Text>
-      </TouchableOpacity>
 
       {/* Workout data container */}
       <View style={styles.workoutContainer}>
@@ -84,6 +78,13 @@ const WorkoutHistory = ({navigation}) => {
           )}
         </ScrollView>
       </View>
+
+      <TouchableOpacity
+        style={styles.topButton}
+        onPress={() => navigation.navigate('Live Workout')}
+      >
+        <Text style={styles.buttonText}>Start Workout</Text>
+      </TouchableOpacity>
 
       {/* Streak counter */}
       <View style={styles.streakContainer}>

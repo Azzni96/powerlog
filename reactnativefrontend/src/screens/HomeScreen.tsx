@@ -92,9 +92,7 @@ const HomeScreen = ({navigation}: any) => {
       <View style={styles.header}>
         <Text style={styles.title}>Welcome to PowerLog</Text>
       </View>
-      <View style={styles.motivationContainer}>
-        <Text style={styles.text}>Motivation of the day: SUUTU JO!</Text>
-      </View>
+
       <View style={styles.rowContainer}>
         <View style={styles.leftContainer}>
           <Text style={styles.sectionTitle}>Food Stats</Text>
@@ -123,6 +121,9 @@ const HomeScreen = ({navigation}: any) => {
           </ScrollView>
         </View>
       </View>
+      <View style={styles.motivationContainer}>
+        <Text style={styles.text}>Motivation of the day: SUUTU JO!</Text>
+      </View>
       <View style={styles.streakContainer}>
         <Text style={styles.sectionTitle}>Workout Streak</Text>
         <Text style={styles.text}>5 days 🔥</Text>
@@ -134,18 +135,20 @@ const HomeScreen = ({navigation}: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#414141',
+    backgroundColor: '#000000',
   },
   rowContainer: {
     flexDirection: 'row',
-    flex: 2,
+    flex: 0,
+    height: 250,
+    marginBottom: 20,
+    justifyContent: 'space-between',
   },
   leftContainer: {
     flex: 1,
     justifyContent: 'flex-start',
     padding: 10,
-    maxHeight: 210,
-    backgroundColor: 'black',
+    backgroundColor: '#414141',
     margin: 10,
     borderRadius: 10,
   },
@@ -153,8 +156,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     padding: 10,
-    maxHeight: 210,
-    backgroundColor: 'black',
+    backgroundColor: '#414141',
     margin: 10,
     borderRadius: 10,
   },
@@ -166,22 +168,25 @@ const styles = StyleSheet.create({
     borderBottomColor: '#555',
   },
   streakContainer: {
-    flex: 1,
-    padding: 5,
+    padding: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000000',
+    backgroundColor: '#414141',
     borderRadius: 15,
-    maxHeight: 150,
+    height: 90, // Fixed height instead of flex and maxHeight
+    marginHorizontal: 10,
+    marginTop: 0, // Reduced top margin
+    marginBottom: 20,
   },
   motivationContainer: {
     flex: 1,
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000000',
+    backgroundColor: '#414141',
     borderRadius: 15,
-    maxHeight: 150,
+    margin: 10,
+    maxHeight: 100,
   },
   title: {
     fontSize: 24,
