@@ -11,8 +11,8 @@ import  upload  from "../utils/multerConfig";
 const router = express.Router();
 
 router.get("/", authenticate, fetchWorkoutForms);
-router.post("/", authenticate, isAdmin, upload.single("file"), addWorkoutForm);
-router.put("/:id", authenticate, isAdmin, upload.single("file"), modifyWorkoutForm);
-router.delete("/:id", authenticate, isAdmin, removeWorkoutForm);
+router.post("/", authenticate,  upload.single("file"), addWorkoutForm);
+router.put("/:id", authenticate,  upload.single("file"), modifyWorkoutForm);
+router.delete("/:id", authenticate,  removeWorkoutForm);
 
 export default router;

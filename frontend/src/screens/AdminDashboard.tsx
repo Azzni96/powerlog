@@ -1,40 +1,26 @@
-// Description: This is the admin dashboard screen for the fitness app. It provides navigation to various admin functionalities such as managing users, workouts, food diaries, and BMI records.
-import { View, Text, Button, ScrollView, StyleSheet } from 'react-native';
+import { useNavigate } from 'react-router-dom';
 
-const AdminDashboard = ({ navigation }: any) => {
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user'); // Also remove user data
+    navigate('/');
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Admin Dashboard</Text>
-
-      <Button title="👥 Manage Users" onPress={() => navigation.navigate('ManageUsers')} />
-      <View style={styles.spacing} />
-
-      <Button title="🏋️‍♂️ Manage Workouts" onPress={() => navigation.navigate('ManageWorkouts')} />
-      <View style={styles.spacing} />
-
-      <Button title="🍽 Manage Food Diaries" onPress={() => navigation.navigate('ManageFood')} />
-      <View style={styles.spacing} />
-
-      <Button title="📈 Manage BMI Records" onPress={() => navigation.navigate('ManageBMI')} />
-    </ScrollView>
+    <div className="admin-dashboard">
+      <h2>Admin Dashboard</h2>
+      <div className="admin-nav">
+        <button onClick={() => navigate('/manage-users')}>Manage Users</button>
+        <button onClick={() => navigate('/manage-workouts')}>Manage Workouts</button>
+        <button onClick={() => navigate('/manage-food')}>Manage Food</button>
+        <button onClick={() => navigate('/manage-bmi')}>Manage BMI</button>
+        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+      </div>
+    </div>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    paddingBottom: 50,
-    alignItems: 'stretch',
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  spacing: {
-    marginVertical: 10,
-  },
-});
 
 export default AdminDashboard;

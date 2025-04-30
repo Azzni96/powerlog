@@ -28,9 +28,10 @@ export const addWorkoutForm = async (req: Request, res: Response) => {
       video: file?.match(/\.(mp4|avi|mkv)$/) ? file : null
     };
     const id = await createWorkoutForm(workoutData);
-    res.status(201).json({ message: "Workout form created", id });
+    res.status(201).json({ message: "Workout form created", id: String(id) });
   } catch (error) {
     console.error("Error adding workout form:", error);
+    
     res.status(500).json({ error: "Server error" });
   }
 };

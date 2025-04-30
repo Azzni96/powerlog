@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
 import userroute from "./routes/userroute";
 import { ErrorRequestHandler } from "express";
 import formsQuestionRoutes from './routes/formsQuestionsRoutes';
@@ -24,6 +25,9 @@ app.use('/api/workout-forms', workoutFormRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/food', foodRoutes);
 app.use('/api/bmi', bmiRoutes);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Add a global error handler
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.error("Server error:", err);
