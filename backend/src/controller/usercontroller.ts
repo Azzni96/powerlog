@@ -9,7 +9,9 @@ import {
   getUserById,
   getUserByName,
   updateUser,
-  deleteUser
+  deleteUser,
+  deleteUserAccountByAdmin,
+  updateUserAccount,
 } from "../model/usermodel";
 import { sendEmail } from "../utils/emailService";
 import dotenv from "dotenv";
@@ -236,3 +238,55 @@ export const deleteUserAccount = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to delete user account" });
   }
 }
+
+// 1. تعديل بيانات المستخدم بواسطة الادمن
+export const updateUserAccountByAdmin = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const { username, email, user_level } = req.body;
+    
+    // Validate input
+    if (!userId || isNaN(userId)) {
+       res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    // Check if user exists
+    const userExists = await pool.query("SELECT * FROM users WHERE Id = ?", [userId]);
+    
+    if (!userExists || userExists.length === 0) {
+       res.status(404).json({ error: "User not found" });
+    }
+
+    // Update user
+    await pool.query(
+      "UPDATE users SET Username = ?, Email = ?, User_level = ? WHERE Id = ?",
+      [username, email, user_level, userId]
+    );
+
+    // Send only one response
+     res.status(200).json({ message: "User updated successfully" });
+    
+  } catch (error) {
+    console.error("Error in updateUserAccountByAdmin:", error);
+     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// 2. حذف حساب مستخدم بواسطة الأدمن
+export const deleteUserAccountAdmin = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.id);  // الحصول على معرف المستخدم من الـ params
+
+    // التحقق من أن المستخدم لديه صلاحيات الأدمن
+    if ((req as any).user.user_level !== 'admin') {
+       res.status(403).json({ error: "Forbidden" });
+    }
+
+    await deleteUserAccountByAdmin(userId);
+
+    res.status(200).json({ message: "User account deleted successfully" });
+  } catch (error) {
+    console.error("Error in deleteUserAccountByAdmin:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};

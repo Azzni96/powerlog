@@ -77,9 +77,14 @@ export default function ManageUsers() {
 
     try {
       const token = localStorage.getItem('token');
+            // تأكد من أن التوكن موجود
+      if (!token) {
+        console.log('No token found!');
+        return;
+      }
 
       await axios.put(
-        `http://localhost:3000/api/user/${editingUser.id}`,
+        `http://localhost:3000/api/user/update/${editingUser.id}`,
         {
           username: editingUser.username,
           email: editingUser.email,
@@ -107,9 +112,14 @@ export default function ManageUsers() {
 
     try {
       const token = localStorage.getItem('token');
+          // تأكد من أن التوكن موجود
+      if (!token) {
+        console.log('No token found!');
+        return;
+      }
 
       await axios.delete(
-        `http://localhost:3000/api/user/${userId}`,
+        `http://localhost:3000/api/user/delete/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

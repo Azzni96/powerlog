@@ -6,7 +6,9 @@ import {
   resetPassword,
   fetchUsers,
   updateUserInfo,
-  deleteUserAccount
+  deleteUserAccount,
+  updateUserAccountByAdmin,
+  deleteUserAccountAdmin
 } from "../controller/usercontroller";
 import { getUserById } from "../model/usermodel"; // Add this import
 
@@ -64,4 +66,7 @@ router.get("/profile", authenticate, getProfile);
 
 router.put("/me", authenticate, updateUserInfo);
 router.delete("/me", authenticate, deleteUserAccount);
+router.put("/update/:id", authenticate, updateUserAccountByAdmin);
+router.delete("/delete/:id", authenticate, deleteUserAccountAdmin); // Fixed typo: deleteUserAccountByAdminn -> deleteUserAccountByAdmin
+
 export default router;

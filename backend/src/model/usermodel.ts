@@ -101,3 +101,30 @@ export const deleteUser = async (user_id: number) => {
   await conn.query("DELETE FROM users WHERE Id = ?", [user_id]);
   conn.release();
 }
+
+// 1. تحديث المستخدم
+export const updateUserAccount = async (userId: number, data: { username: string; email: string; user_level: string }) => {
+  try {
+    const conn = await pool.getConnection();
+    await conn.query(
+      "UPDATE users SET Username = ?, Email = ?, User_level = ? WHERE Id = ?",
+      [data.username, data.email, data.user_level, userId]
+    );
+    conn.release();
+  } catch (error) {
+    console.error("Error in updateUserAccount:", error);
+    throw error;
+  }
+};
+
+// 2. حذف المستخدم
+export const deleteUserAccountByAdmin = async (userId: number) => {
+  try {
+    const conn = await pool.getConnection();
+    await conn.query("DELETE FROM users WHERE Id = ?", [userId]);
+    conn.release();
+  } catch (error) {
+    console.error("Error in deleteUserAccountByAdmin:", error);
+    throw error;
+  }
+};
