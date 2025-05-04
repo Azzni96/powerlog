@@ -67,39 +67,56 @@ export const removeFood = async (req: Request, res: Response) => {
   }
 };
 
-export const searchNutritionixFood = async (req: Request, res: Response) => {
+export const searchNutritionixFood = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { query } = req.body;
 
-    if (!query || query.trim() === "") {
-      return res.status(400).json({ error: "Search query is required" });
+    if (!query) {
+      res.status(400).json({ error: "Search query is required" });
+      return;
     }
+
+    console.log("Searching for:", query);
 
     const response = await axios.post(
       "https://trackapi.nutritionix.com/v2/search/instant",
-      { query, detailed: true },
+      { query },
       {
         headers: {
           "Content-Type": "application/json",
           "x-app-id": process.env.NUTRITIONIX_APP_ID,
-          "x-app-key": process.env.NUTRITIONIX_API_KEY,
+          "x-app-key": process.env.NUTRITIONIX_API_KEY, // Make sure this is API_KEY not APP_KEY
         },
       }
     );
 
+    console.log("API response status:", response.status);
+    console.log("Has data:", !!response.data);
+
     res.status(200).json(response.data);
   } catch (error) {
     console.error("Error searching food:", error);
-    res.status(500).json({ error: "Failed to search foods" });
+    res.status(500).json({ error: (error as Error).message });
   }
 };
 
-export const getNutritionInfo = async (req: Request, res: Response) => {
+export const getNutritionInfo = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const { foodName } = req.body;
+    const foodName = req.params.foodId; // This is where you get the food name from URL
 
-    if (!foodName || foodName.trim() === "") {
-      return res.status(400).json({ error: "Food name is required" });
+    console.log("Getting nutrition for:", foodName); // Add this log
+
+    // Make sure both API credentials are available
+    if (!process.env.NUTRITIONIX_APP_ID || !process.env.NUTRITIONIX_API_KEY) {
+      console.error("Missing Nutritionix credentials");
+      res.status(500).json({ error: "API configuration error" });
+      return;
     }
 
     const response = await axios.post(

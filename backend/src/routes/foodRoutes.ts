@@ -4,8 +4,8 @@ import {
   addFood,
   editFood,
   removeFood,
-  searchNutritionixFood,
   getNutritionInfo,
+  searchNutritionixFood,
 } from "../controller/foodController";
 import { authenticate } from "../middleware/authenticate";
 

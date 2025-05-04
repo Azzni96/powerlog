@@ -9,6 +9,9 @@ const HomeScreen = ({navigation}: any) => {
   const [user, setUser] = useState<any>(null);
   const {getUser} = useUser();
   const [workouts, setWorkouts] = useState([]);
+  const [calorieGoal, setCalorieGoal] = useState(2000); // Default value
+  const [consumedCalories, setConsumedCalories] = useState(0);
+  const [meals, setMeals] = useState([]);
 
   // Function to navigate to Auth stack (for logout or authentication failures)
   const resetToAuth = () => {
@@ -22,6 +25,48 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   useEffect(() => {
+    const loadCalorieData = async () => {
+      try {
+        // Set default values first
+        let currentCalories = 0;
+
+        // Load meals data from AsyncStorage
+        const storedMeals = await AsyncStorage.getItem('meals');
+        if (storedMeals) {
+          const parsedMeals = JSON.parse(storedMeals);
+          setMeals(parsedMeals);
+
+          const today = new Date().toISOString().split('T')[0];
+          const todaysMeals = parsedMeals.filter(
+            (meal: {date: string}) => meal.date && meal.date.startsWith(today),
+          );
+          currentCalories = todaysMeals.reduce(
+            (sum, meal) => sum + (meal.calories || 0),
+            0,
+          );
+        } else {
+          // No meals found, set meals to empty array
+          setMeals([]);
+        }
+
+        // Always update consumed calories - this will be 0 if no meals exist
+        setConsumedCalories(currentCalories);
+
+        // Also load calorie goal (just to be consistent)
+        const storedGoal = await AsyncStorage.getItem('calorieGoal');
+        if (storedGoal) {
+          setCalorieGoal(parseInt(storedGoal));
+        }
+      } catch (error) {
+        console.error('Error loading calorie data:', error);
+        // Set fallback values on error
+        setMeals([]);
+        setConsumedCalories(0);
+      }
+    };
+
+    loadCalorieData();
+
     // Function to fetch workouts from AsyncStorage
     const loadWorkouts = async () => {
       try {
@@ -34,7 +79,6 @@ const HomeScreen = ({navigation}: any) => {
         console.error('Error loading workouts:', error);
       }
     };
-
     loadWorkouts();
 
     // Function to fetch user profile
@@ -75,6 +119,55 @@ const HomeScreen = ({navigation}: any) => {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    const loadCalorieData = async () => {
+      try {
+        // Set default values first
+        let currentCalories = 0;
+
+        // Load meals data from AsyncStorage
+        const storedMeals = await AsyncStorage.getItem('meals');
+        if (storedMeals) {
+          const parsedMeals = JSON.parse(storedMeals);
+          setMeals(parsedMeals);
+
+          const today = new Date().toISOString().split('T')[0];
+          const todaysMeals = parsedMeals.filter(
+            (meal: {date: string}) => meal.date && meal.date.startsWith(today),
+          );
+          currentCalories = todaysMeals.reduce(
+            (sum, meal) => sum + (meal.calories || 0),
+            0,
+          );
+        } else {
+          // No meals found, set meals to empty array
+          setMeals([]);
+        }
+
+        // Always update consumed calories - this will be 0 if no meals exist
+        setConsumedCalories(currentCalories);
+
+        // Also load calorie goal (just to be consistent)
+        const storedGoal = await AsyncStorage.getItem('calorieGoal');
+        if (storedGoal) {
+          setCalorieGoal(parseInt(storedGoal));
+        }
+      } catch (error) {
+        console.error('Error loading calorie data:', error);
+        // Set fallback values on error
+        setMeals([]);
+        setConsumedCalories(0);
+      }
+    };
+
+    // Create a listener that runs when the screen comes into focus
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadCalorieData(); // This reloads your data when returning to HomeScreen
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const formatTime = (ms: number) => {
     const seconds = Math.floor((ms / 1000) % 60);
     const minutes = Math.floor((ms / 60000) % 60);
@@ -96,8 +189,33 @@ const HomeScreen = ({navigation}: any) => {
       <View style={styles.rowContainer}>
         <View style={styles.leftContainer}>
           <Text style={styles.sectionTitle}>Food Stats</Text>
+          <Text style={styles.calorieInfo}>
+            {consumedCalories.toFixed(0)} / {calorieGoal} calories
+          </Text>
+          <View style={styles.progressBarContainer}>
+            <View
+              style={[
+                styles.progressBar,
+                {
+                  width: `${Math.min(100, (consumedCalories / calorieGoal) * 100)}%`,
+                },
+              ]}
+            />
+          </View>
           <Text style={styles.text}>
-            placeholder for calorie stats in future
+            {calorieGoal - consumedCalories > 0
+              ? `${(calorieGoal - consumedCalories).toFixed(0)} calories remaining`
+              : `${Math.abs(calorieGoal - consumedCalories).toFixed(0)} calories over limit`}
+          </Text>
+          <Text style={styles.mealCount}>
+            {
+              meals.filter(
+                (meal) =>
+                  meal.date &&
+                  meal.date.startsWith(new Date().toISOString().split('T')[0]),
+              ).length
+            }{' '}
+            meals today
           </Text>
         </View>
         <View style={styles.rightContainer}>
@@ -222,6 +340,29 @@ const styles = StyleSheet.create({
   workoutDetails: {
     fontSize: 12,
     color: '#00D0FF',
+  },
+  calorieInfo: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 8,
+  },
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: '#333',
+    borderRadius: 4,
+    marginBottom: 8,
+    width: '100%',
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: '#00D0FF',
+    borderRadius: 4,
+  },
+  mealCount: {
+    fontSize: 14,
+    color: '#888',
+    marginTop: 5,
   },
 });
 
