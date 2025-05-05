@@ -26,7 +26,7 @@ app.use('/api/workouts', workoutRoutes);
 app.use('/api/food', foodRoutes);
 app.use('/api/bmi', bmiRoutes);
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Add a global error handler
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
