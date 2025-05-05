@@ -20,18 +20,20 @@ export const fetchWorkoutForms = async (req: Request, res: Response) => {
 // POST create new workout form
 export const addWorkoutForm = async (req: Request, res: Response) => {
   try {
-    const file = req.file ? req.file.filename : null;
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const image = files?.image?.[0]?.filename || null;
+    const video = files?.video?.[0]?.filename || null;
 
     const workoutData = {
       ...req.body,
-      photo: file?.match(/\.(jpg|jpeg|png|gif)$/) ? file : null,
-      video: file?.match(/\.(mp4|avi|mkv)$/) ? file : null
+      photo: image,
+      video: video
     };
+
     const id = await createWorkoutForm(workoutData);
     res.status(201).json({ message: "Workout form created", id: String(id) });
   } catch (error) {
     console.error("Error adding workout form:", error);
-    
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -40,12 +42,14 @@ export const addWorkoutForm = async (req: Request, res: Response) => {
 export const modifyWorkoutForm = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    const file = req.file ? req.file.filename : null;
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const image = files?.image?.[0]?.filename || null;
+    const video = files?.video?.[0]?.filename || null;
 
     const workoutData = {
       ...req.body,
-      photo: file?.match(/\.(jpg|jpeg|png|gif)$/) ? file : null,
-      video: file?.match(/\.(mp4|avi|mkv)$/) ? file : null
+      photo: image,
+      video: video
     };
 
     await updateWorkoutForm(id, workoutData);

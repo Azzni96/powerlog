@@ -11,8 +11,18 @@ import  upload  from "../utils/multerConfig";
 const router = express.Router();
 
 router.get("/", authenticate, fetchWorkoutForms);
-router.post("/", authenticate,  upload.single("file"), addWorkoutForm);
-router.put("/:id", authenticate,  upload.single("file"), modifyWorkoutForm);
+router.post("/", authenticate,  // ✅ صحيح:
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "video", maxCount: 1 }
+  ])
+  , addWorkoutForm);
+router.put("/:id", authenticate, // ✅ صحيح:
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "video", maxCount: 1 }
+  ])
+  , modifyWorkoutForm);
 router.delete("/:id", authenticate,  removeWorkoutForm);
 
 export default router;

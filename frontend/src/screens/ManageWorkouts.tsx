@@ -1,5 +1,3 @@
-// src/screens/ManageWorkouts.tsx
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -38,12 +36,6 @@ const ManageWorkouts = () => {
     difficulty: 'medium',
   });
   const [isCreating, setIsCreating] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedProgram, setSelectedProgram] = useState<string>('');
-
-  // Add media view filters state
-  const [showImagesOnly, setShowImagesOnly] = useState<boolean>(false);
-  const [showVideosOnly, setShowVideosOnly] = useState<boolean>(false);
 
   // Local file states
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -56,59 +48,7 @@ const ManageWorkouts = () => {
   // Keep track of url mappings for newly added workouts
   const [workoutMediaUrls, setWorkoutMediaUrls] = useState<{[key: string]: string}>({});
 
-  // Get unique categories and programs
-  const categories = [...new Set(workouts.map(workout => workout.category))];
-  const programs = selectedCategory
-    ? [...new Set(workouts
-        .filter(workout => workout.category === selectedCategory)
-        .map(workout => workout.workout_program))]
-    : [];
-
-  // Filter workouts based on selected category, program, and media type
-  const filteredWorkouts = workouts.filter(workout => {
-    // Filter by category and program
-    if (selectedCategory && workout.category !== selectedCategory) {
-      return false;
-    }
-    if (selectedProgram && workout.workout_program !== selectedProgram) {
-      return false;
-    }
-
-    // Filter by media type if selected
-    if (showImagesOnly && !workout.photo) {
-      return false;
-    }
-    if (showVideosOnly && !workout.video) {
-      return false;
-    }
-
-    return true;
-  });
-
   const navigate = useNavigate();
-
-  // Toggle media filters
-  const toggleImagesOnly = () => {
-    setShowImagesOnly(!showImagesOnly);
-    if (!showImagesOnly) {
-      setShowVideosOnly(false); // Turn off videos filter when turning on images
-    }
-  };
-
-  const toggleVideosOnly = () => {
-    setShowVideosOnly(!showVideosOnly);
-    if (!showVideosOnly) {
-      setShowImagesOnly(false); // Turn off images filter when turning on videos
-    }
-  };
-
-  // Reset all filters
-  const resetFilters = () => {
-    setSelectedCategory('');
-    setSelectedProgram('');
-    setShowImagesOnly(false);
-    setShowVideosOnly(false);
-  };
 
   // Modified to fetch workouts from backend
   const fetchWorkouts = async () => {
@@ -168,15 +108,13 @@ const ManageWorkouts = () => {
       formData.append('description', newWorkout.description || '');
       formData.append('duration_minutes', String(newWorkout.duration_minutes));
       formData.append('difficulty', newWorkout.difficulty);
-
-      // Only add one file or the other, not both
       if (imageFile) {
-        formData.append('file', imageFile);
-        console.log('Adding image file:', imageFile.name);
-      } else if (videoFile) {
-        formData.append('file', videoFile);
-        console.log('Adding video file:', videoFile.name);
+        formData.append('image', imageFile);
       }
+      if (videoFile) {
+        formData.append('video', videoFile);
+      }
+
 
       console.log('Sending workout data to server...');
 
@@ -290,18 +228,6 @@ const ManageWorkouts = () => {
     }
   };
 
-  // Add this function to help with form setup
-  const handleFileSelection = (type: 'image' | 'video') => {
-    // Clear the other file type when selecting a new one
-    if (type === 'image') {
-      setVideoFile(null);
-      setVideoPreview(null);
-    } else {
-      setImageFile(null);
-      setImagePreview(null);
-    }
-  };
-
   // Update the image file handler
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -309,9 +235,6 @@ const ManageWorkouts = () => {
       const isImage = file.type.startsWith('image/');
 
       if (isImage) {
-        // Clear any video files first
-        handleFileSelection('image');
-
         setImageFile(file);
 
         // Create a URL for preview
@@ -333,9 +256,6 @@ const ManageWorkouts = () => {
       const isVideo = file.type.startsWith('video/');
 
       if (isVideo) {
-        // Clear any image files first
-        handleFileSelection('video');
-
         setVideoFile(file);
 
         // Create a URL for preview
@@ -369,67 +289,49 @@ const ManageWorkouts = () => {
     navigate('/admin-dashboard');
   };
 
-  // Display workout media with previews for new uploads
   const renderMedia = (workout: WorkoutForm) => {
-    // If this is a workout with a photo from the backend
+    // For photos
     if (workout.photo) {
-      // For newly added images, use the stored URL from state
-      if (workoutMediaUrls[workout.photo]) {
-        return (
-          <div className="workout-media">
+      // Full URL path including the server address
+      const photoUrl = `http://localhost:3000/uploads/${workout.photo}`;
+      console.log("Rendering photo:", photoUrl); // Debug log
+
+      return (
+        <div className="workout-media">
           <img
-            src={`http://localhost:3000/uploads/${workout.photo}`} // التأكد من أن الرابط صحيح
+            src={photoUrl}
             alt={workout.exercise_name}
             className="workout-thumbnail"
+            onError={(e) => {
+              console.error("Image failed to load:", photoUrl);
+              e.currentTarget.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
+            }}
           />
-        </div>
-        );
-      }
-      // For backend images
-      else {
-        return (
-          <div className="workout-media">
-          <video controls className="workout-thumbnail">
-            <source src={`http://localhost:3000/uploads/${workout.video}`} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-        );
-      }
-    }
-    // If this is a workout with a video
-    else if (workout.video) {
-      // For newly added videos, use the stored URL from state
-      if (workoutMediaUrls[workout.video]) {
-        return (
-          <div className="workout-media">
-            <video controls className="workout-thumbnail">
-              <source src={workoutMediaUrls[workout.video]} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        );
-      }
-      // For backend videos
-      else {
-        return (
-          <div className="workout-media">
-            <video controls className="workout-thumbnail">
-              <source src={`http://localhost:3000/uploads/${workout.video}`} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        );
-      }
-    }
-    // No media
-    else {
-      return (
-        <div className="workout-media workout-no-media">
-          <span>No media</span>
+
         </div>
       );
     }
+    // For videos
+    else if (workout.video) {
+      const videoUrl = `http://localhost:3000/uploads/${workout.video}`;
+      console.log("Rendering video:", videoUrl); // Debug log
+
+      return (
+        <div className="workout-media">
+          <video controls className="workout-thumbnail">
+            <source src={videoUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+
+        </div>
+      );
+    }
+    // No media
+    return (
+      <div className="workout-media workout-no-media">
+        <span>No media</span>
+      </div>
+    );
   };
 
   // Media preview for the form
@@ -578,7 +480,6 @@ const ManageWorkouts = () => {
                   type="file"
                   onChange={handleImageFileChange}
                   accept="image/*"
-                  disabled={!!videoFile} // Disable if video is selected
                 />
                 {imageFile && (
                   <p className="file-selected">
@@ -597,7 +498,6 @@ const ManageWorkouts = () => {
                 type="file"
                 onChange={handleVideoFileChange}
                 accept="video/*"
-                disabled={!!imageFile} // Disable if image is selected
               />
               {videoFile && (
                 <p className="file-selected">
@@ -607,9 +507,6 @@ const ManageWorkouts = () => {
                   }
                 </p>
               )}
-              {(imageFile || videoFile) &&
-                <p className="file-info">Only one file (image OR video) can be uploaded at a time</p>
-              }
             </div>
 
             {/* Show previews */}
@@ -629,102 +526,15 @@ const ManageWorkouts = () => {
             <button type="submit" className="btn update-btn">Create Workout</button>
           </form>
         </div>
-      ) : (
-        <div className="workout-filters">
-          <h3>Filter Workouts</h3>
-
-          {/* Category and Program filters */}
-          <div className="form-row">
-            <div className="form-group">
-              <label>Category</label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => {
-                  setSelectedCategory(e.target.value);
-                  setSelectedProgram(''); // Reset program when category changes
-                }}
-              >
-                <option value="">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Program</label>
-              <select
-                value={selectedProgram}
-                onChange={(e) => setSelectedProgram(e.target.value)}
-                disabled={!selectedCategory}
-              >
-                <option value="">All Programs</option>
-                {programs.map(program => (
-                  <option key={program} value={program}>{program}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Media type filters */}
-          <div className="media-filters">
-            <button
-              className={`filter-btn ${showImagesOnly ? 'active' : ''}`}
-              onClick={toggleImagesOnly}
-            >
-              Images Only
-            </button>
-            <button
-              className={`filter-btn ${showVideosOnly ? 'active' : ''}`}
-              onClick={toggleVideosOnly}
-            >
-              Videos Only
-            </button>
-            <button
-              className="filter-btn reset"
-              onClick={resetFilters}
-            >
-              Reset Filters
-            </button>
-          </div>
-
-          {/* Filter status indicators */}
-          {(showImagesOnly || showVideosOnly || selectedCategory || selectedProgram) && (
-            <div className="active-filters">
-              <p>Active filters:</p>
-              <div className="filter-tags">
-                {selectedCategory && (
-                  <span className="filter-tag">
-                    Category: {selectedCategory}
-                  </span>
-                )}
-                {selectedProgram && (
-                  <span className="filter-tag">
-                    Program: {selectedProgram}
-                  </span>
-                )}
-                {showImagesOnly && (
-                  <span className="filter-tag">
-                    Media: Images
-                  </span>
-                )}
-                {showVideosOnly && (
-                  <span className="filter-tag">
-                    Media: Videos
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      ) : null}
 
       {loading ? (
         <p>Loading workouts...</p>
       ) : (
         <>
-          {filteredWorkouts.length > 0 ? (
+          {workouts.length > 0 ? (
             <div className="workouts-grid">
-              {filteredWorkouts.map((workout) => (
+              {workouts.map((workout) => (
                 <div key={workout.Id} className="workout-card">
                   <div className="workout-header">
                     <h3>{workout.exercise_name}</h3>
@@ -797,7 +607,7 @@ const ManageWorkouts = () => {
               ))}
             </div>
           ) : (
-            <p>No workouts found. {(selectedCategory || selectedProgram || showImagesOnly || showVideosOnly) ? 'Try changing your filters.' : 'Create a workout to get started.'}</p>
+            <p>No workouts found. Create a workout to get started.</p>
           )}
         </>
       )}
