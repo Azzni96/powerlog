@@ -3,10 +3,22 @@ import {
   getAllFormQuestions,
   createFormQuestion,
   updateFormQuestion,
-  deleteFormQuestion
+  deleteFormQuestion,
 } from "../model/formsQuestionsModel";
 
-// GET
+/**
+ * @api {get} /api/questions Get All Form Questions
+ * @apiName GetFormQuestions
+ * @apiGroup FormsQuestions
+ * @apiDescription Retrieves all form questions in the system.
+ *
+ * @apiSuccess {Object[]} questions List of form questions
+ * @apiSuccess {Number} questions.id Question ID
+ * @apiSuccess {String} questions.category Question category
+ * @apiSuccess {String} questions.question Question text content
+ *
+ * @apiError {Object} error Error message
+ */
 export const fetchFormQuestions = async (req: Request, res: Response) => {
   try {
     const questions = await getAllFormQuestions();
@@ -17,7 +29,21 @@ export const fetchFormQuestions = async (req: Request, res: Response) => {
   }
 };
 
-// POST
+/**
+ * @api {post} /api/questions Create Form Question
+ * @apiName CreateFormQuestion
+ * @apiGroup FormsQuestions
+ * @apiDescription Creates a new form question.
+ *
+ * @apiBody {String} category The category of the question
+ * @apiBody {String} question The question text content
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ * @apiSuccess {Number} result.id ID of the newly created question
+ *
+ * @apiError {Object} error Error message
+ */
 export const addFormQuestion = async (req: Request, res: Response) => {
   try {
     const { category, question } = req.body;
@@ -29,7 +55,22 @@ export const addFormQuestion = async (req: Request, res: Response) => {
   }
 };
 
-// PUT
+/**
+ * @api {put} /api/questions/:id Update Form Question
+ * @apiName UpdateFormQuestion
+ * @apiGroup FormsQuestions
+ * @apiDescription Updates an existing form question.
+ *
+ * @apiParam {Number} id Question ID to update
+ *
+ * @apiBody {String} category Updated category
+ * @apiBody {String} question Updated question text
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const editFormQuestion = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
@@ -42,7 +83,19 @@ export const editFormQuestion = async (req: Request, res: Response) => {
   }
 };
 
-// DELETE
+/**
+ * @api {delete} /api/questions/:id Delete Form Question
+ * @apiName DeleteFormQuestion
+ * @apiGroup FormsQuestions
+ * @apiDescription Deletes a form question.
+ *
+ * @apiParam {Number} id Question ID to delete
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const removeFormQuestion = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);

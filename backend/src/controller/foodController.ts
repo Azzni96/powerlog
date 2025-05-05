@@ -7,7 +7,23 @@ import {
 } from "../model/foodModel";
 import axios from "axios";
 
-// GET: all food logs
+/**
+ * @api {get} /api/food Get User Food Logs
+ * @apiName GetFoodLogs
+ * @apiGroup Food
+ * @apiDescription Retrieves all food logs for the authenticated user.
+ *
+ * @apiSuccess {Object[]} entries List of food entries
+ * @apiSuccess {Number} entries.id Entry ID
+ * @apiSuccess {Number} entries.user_id User ID
+ * @apiSuccess {Number} entries.meals_per_day Number of meals per day
+ * @apiSuccess {String} entries.meal_time Time of meal
+ * @apiSuccess {String} entries.meal_type Type of meal
+ * @apiSuccess {String} entries.details Additional meal details
+ * @apiSuccess {Date} entries.created_at Creation timestamp
+ *
+ * @apiError {Object} error Error message
+ */
 export const fetchFood = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
@@ -19,7 +35,22 @@ export const fetchFood = async (req: Request, res: Response) => {
   }
 };
 
-// POST: create food log
+/**
+ * @api {post} /api/food Add Food Log
+ * @apiName AddFoodLog
+ * @apiGroup Food
+ * @apiDescription Creates a new food log entry for the authenticated user.
+ *
+ * @apiBody {Number} meals_per_day Number of meals consumed per day
+ * @apiBody {String} meal_time Time the meal was consumed
+ * @apiBody {String} meal_type Type of meal
+ * @apiBody {String} details Additional details about the meal
+ *
+ * @apiSuccess {Object} result Result message
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const addFood = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
@@ -33,7 +64,24 @@ export const addFood = async (req: Request, res: Response) => {
   }
 };
 
-// PUT: update food
+/**
+ * @api {put} /api/food/:id Update Food Log
+ * @apiName UpdateFoodLog
+ * @apiGroup Food
+ * @apiDescription Updates an existing food log entry.
+ *
+ * @apiParam {Number} id Food entry ID
+ *
+ * @apiBody {Number} meals_per_day Updated number of meals per day
+ * @apiBody {String} meal_time Updated meal time
+ * @apiBody {String} meal_type Updated meal type
+ * @apiBody {String} details Updated meal details
+ *
+ * @apiSuccess {Object} result Result message
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const editFood = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
@@ -54,7 +102,19 @@ export const editFood = async (req: Request, res: Response) => {
   }
 };
 
-// DELETE
+/**
+ * @api {delete} /api/food/:id Delete Food Log
+ * @apiName DeleteFoodLog
+ * @apiGroup Food
+ * @apiDescription Deletes a food log entry.
+ *
+ * @apiParam {Number} id Food entry ID to delete
+ *
+ * @apiSuccess {Object} result Result message
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const removeFood = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
@@ -67,6 +127,20 @@ export const removeFood = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @api {post} /api/food/search Search Food in Nutritionix
+ * @apiName SearchNutritionixFood
+ * @apiGroup Food
+ * @apiDescription Searches for food items in the Nutritionix database.
+ *
+ * @apiBody {String} query Search query string
+ *
+ * @apiSuccess {Object} searchResults Nutritionix search results
+ * @apiSuccess {Object[]} searchResults.common Common food items
+ * @apiSuccess {Object[]} searchResults.branded Branded food items
+ *
+ * @apiError {Object} error Error message
+ */
 export const searchNutritionixFood = async (
   req: Request,
   res: Response
@@ -88,7 +162,7 @@ export const searchNutritionixFood = async (
         headers: {
           "Content-Type": "application/json",
           "x-app-id": process.env.NUTRITIONIX_APP_ID,
-          "x-app-key": process.env.NUTRITIONIX_API_KEY, // Make sure this is API_KEY not APP_KEY
+          "x-app-key": process.env.NUTRITIONIX_API_KEY,
         },
       }
     );
@@ -103,16 +177,28 @@ export const searchNutritionixFood = async (
   }
 };
 
+/**
+ * @api {get} /api/food/nutrition/:foodId Get Nutrition Information
+ * @apiName GetNutritionInfo
+ * @apiGroup Food
+ * @apiDescription Gets detailed nutrition information for a specific food item.
+ *
+ * @apiParam {String} foodId Food name or identifier
+ *
+ * @apiSuccess {Object} nutritionData Detailed nutrition information
+ * @apiSuccess {Object[]} nutritionData.foods Array of food items with nutrition details
+ *
+ * @apiError {Object} error Error message
+ */
 export const getNutritionInfo = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const foodName = req.params.foodId; // This is where you get the food name from URL
+    const foodName = req.params.foodId;
 
-    console.log("Getting nutrition for:", foodName); // Add this log
+    console.log("Getting nutrition for:", foodName);
 
-    // Make sure both API credentials are available
     if (!process.env.NUTRITIONIX_APP_ID || !process.env.NUTRITIONIX_API_KEY) {
       console.error("Missing Nutritionix credentials");
       res.status(500).json({ error: "API configuration error" });

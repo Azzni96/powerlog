@@ -2,10 +2,24 @@ import { Request, Response } from "express";
 import {
   getChoicesByQuestionId,
   addChoice,
-  deleteChoice
+  deleteChoice,
 } from "../model/formChoicesModel";
 
-// GET
+/**
+ * @api {get} /api/questions/:questionId/choices Get Choices by Question
+ * @apiName GetChoicesByQuestion
+ * @apiGroup FormChoices
+ * @apiDescription Retrieves all answer choices for a specific question.
+ *
+ * @apiParam {Number} questionId Question ID to get choices for
+ *
+ * @apiSuccess {Object[]} choices List of answer choices
+ * @apiSuccess {Number} choices.id Choice ID
+ * @apiSuccess {Number} choices.question_id Question ID
+ * @apiSuccess {String} choices.answer_text Answer text content
+ *
+ * @apiError {Object} error Error message
+ */
 export const fetchChoices = async (req: Request, res: Response) => {
   try {
     const questionId = parseInt(req.params.questionId);
@@ -17,7 +31,22 @@ export const fetchChoices = async (req: Request, res: Response) => {
   }
 };
 
-// POST
+/**
+ * @api {post} /api/questions/:questionId/choices Add Answer Choice
+ * @apiName AddAnswerChoice
+ * @apiGroup FormChoices
+ * @apiDescription Creates a new answer choice for a specific question.
+ *
+ * @apiParam {Number} questionId Question ID to add choice to
+ *
+ * @apiBody {String} answer_text The text content of the answer choice
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ * @apiSuccess {Number} result.id ID of the newly created choice
+ *
+ * @apiError {Object} error Error message
+ */
 export const createChoice = async (req: Request, res: Response) => {
   try {
     const questionId = parseInt(req.params.questionId);
@@ -30,7 +59,19 @@ export const createChoice = async (req: Request, res: Response) => {
   }
 };
 
-// DELETE
+/**
+ * @api {delete} /api/choices/:id Delete Answer Choice
+ * @apiName DeleteAnswerChoice
+ * @apiGroup FormChoices
+ * @apiDescription Deletes an answer choice.
+ *
+ * @apiParam {Number} id Choice ID to delete
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const removeChoice = async (req: Request, res: Response) => {
   try {
     const choiceId = parseInt(req.params.id);

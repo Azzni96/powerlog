@@ -6,7 +6,20 @@ import {
 } from "../model/answersModel";
 import pool from "../database/db";
 
-// GET all answers
+/**
+ * @api {get} /api/answers Get User Answers
+ * @apiName GetUserAnswers
+ * @apiGroup Answers
+ * @apiDescription Retrieves all answers submitted by the authenticated user.
+ *
+ * @apiSuccess {Object[]} answers List of user answers
+ * @apiSuccess {Number} answers.id Answer ID
+ * @apiSuccess {Number} answers.question_id Question ID
+ * @apiSuccess {Number} answers.answer_id Answer ID
+ * @apiSuccess {Number} answers.user_id User ID
+ *
+ * @apiError {Object} error Error message
+ */
 export const fetchAnswers = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
@@ -18,7 +31,21 @@ export const fetchAnswers = async (req: Request, res: Response) => {
   }
 };
 
-// POST save all answers
+/**
+ * @api {post} /api/answers Submit User Answers
+ * @apiName SubmitUserAnswers
+ * @apiGroup Answers
+ * @apiDescription Saves multiple answers for the authenticated user.
+ *
+ * @apiBody {Object[]} answers Array of answer objects
+ * @apiBody {Number} answers.question_id Question ID
+ * @apiBody {Number} answers.answer_id Answer ID
+ *
+ * @apiSuccess {Object} result Result message
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const submitAnswers = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
@@ -36,7 +63,17 @@ export const submitAnswers = async (req: Request, res: Response) => {
   }
 };
 
-// DELETE all answers
+/**
+ * @api {delete} /api/answers Clear User Answers
+ * @apiName ClearUserAnswers
+ * @apiGroup Answers
+ * @apiDescription Deletes all answers for the authenticated user.
+ *
+ * @apiSuccess {Object} result Result message
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const clearAnswers = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
@@ -48,7 +85,19 @@ export const clearAnswers = async (req: Request, res: Response) => {
   }
 };
 
-// GET all possible answer choices (not user answers)
+/**
+ * @api {get} /api/answers/choices Get Answer Choices
+ * @apiName GetAnswerChoices
+ * @apiGroup Answers
+ * @apiDescription Retrieves all predefined answer choices available in the system.
+ *
+ * @apiSuccess {Object[]} choices List of answer choices
+ * @apiSuccess {Number} choices.id Answer choice ID
+ * @apiSuccess {Number} choices.question_id Question ID
+ * @apiSuccess {String} choices.answer_text Answer text content
+ *
+ * @apiError {Object} error Error message
+ */
 export const fetchFormChoices = async (req: Request, res: Response) => {
   try {
     console.log("Fetching all possible answer choices");

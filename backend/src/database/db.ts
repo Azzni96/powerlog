@@ -13,6 +13,7 @@ const pool = mariadb.createPool({
   acquireTimeout: 20000, // Timeout for acquiring a connection (20 seconds)
 });
 
+// Test connection on startup
 pool
   .getConnection()
   .then(() => console.log("Database connected successfully"))

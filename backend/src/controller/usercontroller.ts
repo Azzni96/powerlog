@@ -23,6 +23,23 @@ if (!process.env.JWT_SECRET) {
 }
 const JWT_SECRET = process.env.JWT_SECRET;
 
+/**
+ * @api {post} /api/users/signup User Registration
+ * @apiName RegisterUser
+ * @apiGroup User
+ * @apiDescription Creates a new user account.
+ *
+ * @apiBody {String} name Username
+ * @apiBody {String} email User email address
+ * @apiBody {String} password User password
+ * @apiBody {String} confirm_password Password confirmation
+ * @apiBody {String} [user_level] User permission level (admin, restaurant_owner, customer)
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const signup = async (req: Request, res: Response) => {
   try {
     console.log("Signup request received:", req.body); // Log the incoming request body
@@ -87,6 +104,27 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @api {post} /api/users/login User Login
+ * @apiName LoginUser
+ * @apiGroup User
+ * @apiDescription Authenticates a user and returns a JWT token.
+ *
+ * @apiBody {String} name_email User's email address or username
+ * @apiBody {String} password User's password
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ * @apiSuccess {String} result.token JWT authentication token
+ * @apiSuccess {Boolean} result.isFirstLogin Whether this is user's first login
+ * @apiSuccess {Object} result.user User information
+ * @apiSuccess {Number} result.user.id User ID
+ * @apiSuccess {String} result.user.username Username
+ * @apiSuccess {String} result.user.email User email
+ * @apiSuccess {String} result.user.user_level User permission level
+ *
+ * @apiError {Object} error Error message
+ */
 export const login = async (req: Request, res: Response) => {
   try {
     const { name_email, password } = req.body;
@@ -163,6 +201,19 @@ export const getUserByNameOrEmail = async (nameOrEmail: string) => {
   }
 };
 
+/**
+ * @api {post} /api/users/forgot-password Forgot Password
+ * @apiName ForgotPassword
+ * @apiGroup User
+ * @apiDescription Sends a password reset link to the user's email.
+ *
+ * @apiBody {String} email User's email address
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
@@ -186,6 +237,20 @@ export const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @api {post} /api/users/reset-password Reset Password
+ * @apiName ResetPassword
+ * @apiGroup User
+ * @apiDescription Resets user's password using a valid reset token.
+ *
+ * @apiBody {String} token Password reset token from email
+ * @apiBody {String} password New password
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token, password } = req.body;
@@ -198,6 +263,20 @@ export const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @api {get} /api/users Get All Users
+ * @apiName GetAllUsers
+ * @apiGroup User
+ * @apiDescription Retrieves a list of all users.
+ *
+ * @apiSuccess {Object[]} users List of user objects
+ * @apiSuccess {Number} users.id User ID
+ * @apiSuccess {String} users.name Username
+ * @apiSuccess {String} users.email User email
+ * @apiSuccess {String} users.user_level User permission level
+ *
+ * @apiError {Object} error Error message
+ */
 export const fetchUsers = async (req: Request, res: Response) => {
   try {
     const users = await getAllUsers();
@@ -207,6 +286,19 @@ export const fetchUsers = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @api {get} /api/users/profile Get User Profile
+ * @apiName GetUserProfile
+ * @apiGroup User
+ * @apiDescription Retrieves the profile of the authenticated user.
+ *
+ * @apiSuccess {Object} profile User profile data
+ * @apiSuccess {String} profile.name Username
+ * @apiSuccess {String} profile.email User email
+ * @apiSuccess {String} profile.user_level User permission level
+ *
+ * @apiError {Object} error Error message
+ */
 export const getProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
@@ -225,6 +317,20 @@ export const getProfile = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @api {put} /api/users/profile Update User Information
+ * @apiName UpdateUserInfo
+ * @apiGroup User
+ * @apiDescription Updates the profile information of the authenticated user.
+ *
+ * @apiBody {String} [username] Updated username
+ * @apiBody {String} [email] Updated email address
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const updateUserInfo = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
@@ -238,6 +344,17 @@ export const updateUserInfo = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @api {delete} /api/users/profile Delete User Account
+ * @apiName DeleteUserAccount
+ * @apiGroup User
+ * @apiDescription Deletes the account of the authenticated user.
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const deleteUserAccount = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
@@ -249,7 +366,21 @@ export const deleteUserAccount = async (req: Request, res: Response) => {
   }
 };
 
-// Save user's responses to onboarding questions
+/**
+ * @api {post} /api/users/onboarding Save Onboarding Responses
+ * @apiName SaveOnboardingResponses
+ * @apiGroup User
+ * @apiDescription Saves user's responses to onboarding questions.
+ *
+ * @apiBody {Object[]} responses Array of user responses
+ * @apiBody {Number} responses.questionId Question ID
+ * @apiBody {String} responses.answer User's answer to the question
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {String} result.message Success message
+ *
+ * @apiError {Object} error Error message
+ */
 export const saveOnboardingResponses = async (
   req: Request,
   res: Response
@@ -293,7 +424,17 @@ export const saveOnboardingResponses = async (
   }
 };
 
-// Check if user has completed onboarding
+/**
+ * @api {get} /api/users/onboarding Get Onboarding Status
+ * @apiName GetOnboardingStatus
+ * @apiGroup User
+ * @apiDescription Checks if the authenticated user has completed onboarding.
+ *
+ * @apiSuccess {Object} result Result object
+ * @apiSuccess {Boolean} result.onboardingComplete Whether onboarding is complete
+ *
+ * @apiError {Object} error Error message
+ */
 export const getOnboardingStatus = async (
   req: Request,
   res: Response
