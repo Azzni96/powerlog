@@ -566,26 +566,7 @@ const ManageWorkouts = () => {
               </select>
             </div>
           </div>
-          <div className="media-filters">
-            <button
-              className={`filter-btn ${showImagesOnly ? 'active' : ''}`}
-              onClick={toggleImagesOnly}
-            >
-              Images Only
-            </button>
-            <button
-              className={`filter-btn ${showVideosOnly ? 'active' : ''}`}
-              onClick={toggleVideosOnly}
-            >
-              Videos Only
-            </button>
-            <button
-              className="filter-btn reset"
-              onClick={resetFilters}
-            >
-              Reset Filters
-            </button>
-          </div>
+          
           {(showImagesOnly || showVideosOnly || selectedCategory || selectedProgram) && (
             <div className="active-filters">
               <p>Active filters:</p>
