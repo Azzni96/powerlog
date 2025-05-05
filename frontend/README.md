@@ -2,10 +2,10 @@
 
 ## Kuvakaappaukset sovelluksen käyttöliittymästä
 
-![Admin Dashboard]("C:\Users\Käyttäjä\Pictures\Screenshots\dashboard.png")
-![Manage Users]("C:\Users\Käyttäjä\Pictures\Screenshots\manageusers.png")
-![Manage Workouts]("C:\Users\Käyttäjä\Pictures\Screenshots\managemedia.png")
-![Calorie Tracker]("C:\Users\Käyttäjä\Desktop\calorietrack.jpg")
+![Admin Dashboard](C:\Users\Käyttäjä\Pictures\Screenshots\dashboard.png)
+![Manage Users](C:\Users\Käyttäjä\Pictures\Screenshots\manageusers.png)
+![Manage Workouts](C:\Users\Käyttäjä\Pictures\Screenshots\managemedia.png)
+![Calorie Tracker](C:\Users\Käyttäjä\Desktop\calorietrack.jpg)
 
 ## Linkit
 
