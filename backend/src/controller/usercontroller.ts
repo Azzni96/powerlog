@@ -9,7 +9,7 @@ import {
   getUserById,
   getUserByName,
   updateUser,
-  deleteUser
+  deleteUser,
 } from "../model/usermodel";
 import { sendEmail } from "../utils/emailService";
 import dotenv from "dotenv";
@@ -120,9 +120,21 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: "1d" }
     );
 
+    // Check if this is user's first login
+    const isFirstLogin = !user.last_login_date;
+
+    // Update last_login_date
+    const conn = await pool.getConnection();
+    await conn.query(
+      "UPDATE users SET last_login_date = CURRENT_TIMESTAMP WHERE Id = ?",
+      [user.Id]
+    );
+    conn.release();
+
     res.json({
       message: "Login successful",
       token,
+      isFirstLogin, // Add this flag
       user: {
         id: user.Id,
         username: user.Username,
@@ -216,7 +228,7 @@ export const getProfile = async (req: Request, res: Response) => {
 export const updateUserInfo = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
-    const { username, email} = req.body;
+    const { username, email } = req.body;
 
     await updateUser(userId, { username, email });
     res.status(200).json({ message: "User information updated successfully" });
@@ -235,4 +247,72 @@ export const deleteUserAccount = async (req: Request, res: Response) => {
     console.error("Error deleting user account:", error);
     res.status(500).json({ error: "Failed to delete user account" });
   }
-}
+};
+
+// Save user's responses to onboarding questions
+export const saveOnboardingResponses = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = (req as any).user.id;
+    const { responses } = req.body;
+
+    if (!responses || !Array.isArray(responses)) {
+      res.status(400).json({ error: "Invalid response format" });
+      return;
+    }
+
+    const conn = await pool.getConnection();
+    await conn.beginTransaction();
+
+    try {
+      for (const response of responses) {
+        await conn.query(
+          "INSERT INTO UserResponses (user_id, question_id, answer) VALUES (?, ?, ?)",
+          [userId, response.questionId, response.answer]
+        );
+      }
+
+      await conn.query(
+        "UPDATE users SET onboarding_complete = TRUE WHERE Id = ?",
+        [userId]
+      );
+
+      await conn.commit();
+      res.status(200).json({ message: "Onboarding completed successfully" });
+    } catch (error) {
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.release();
+    }
+  } catch (error) {
+    console.error("Error saving onboarding responses:", error);
+    res.status(500).json({ error: "Failed to save responses" });
+  }
+};
+
+// Check if user has completed onboarding
+export const getOnboardingStatus = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = (req as any).user.id;
+
+    const conn = await pool.getConnection();
+    const [result] = await conn.query(
+      "SELECT onboarding_complete FROM users WHERE Id = ?",
+      [userId]
+    );
+    conn.release();
+
+    const onboardingComplete = result[0]?.onboarding_complete === 1;
+
+    res.status(200).json({ onboardingComplete });
+  } catch (error) {
+    console.error("Error checking onboarding status:", error);
+    res.status(500).json({ error: "Failed to check onboarding status" });
+  }
+};

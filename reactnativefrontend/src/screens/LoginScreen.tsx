@@ -11,12 +11,16 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import useUser from '../hooks/userHooks';
+<<<<<<< HEAD
 import {CommonActions} from '@react-navigation/native'; // Add this import
+=======
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
 
 const LoginScreen = ({navigation}: any) => {
   const [nameEmail, setNameEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+<<<<<<< HEAD
   const {postUser} = useUser();
 
 <<<<<<< HEAD
@@ -58,6 +62,30 @@ const LoginScreen = ({navigation}: any) => {
         Alert.alert('Error', 'Login failed');
       }
     } catch (error: any) {
+=======
+  const {login} = useUser(); // Use the hook's login function
+
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+
+      // Use the hook instead of direct axios call
+      const data = await login(nameEmail, password);
+
+      // Check if first login
+      if (data.isFirstLogin) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'OnboardingWelcome'}],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        });
+      }
+    } catch (error) {
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
       console.error('Error during login:', error);
       Alert.alert('Error', 'Login failed');
     } finally {

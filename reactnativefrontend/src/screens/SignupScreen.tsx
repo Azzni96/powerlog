@@ -53,6 +53,7 @@ const SignupScreen = ({navigation}: Props) => {
       return;
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     const { data, ok } = await post("http://10.81.220.32:3000/user/signup", { name, email, password, confirm_password: confirmPassword });
     if (ok) {
       Alert.alert("Success", "User account created successfully");
@@ -60,6 +61,8 @@ const SignupScreen = ({navigation}: Props) => {
     } else {
       Alert.alert("Error", data.error || "Something went wrong");
 =======
+=======
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
 
     console.log('Preparing to send API request'); // Log before API call
     try {
@@ -86,7 +89,10 @@ const SignupScreen = ({navigation}: Props) => {
     } catch (error) {
       console.log('Error during API request:', error); // Log unexpected errors
       Alert.alert('Error', 'Something went wrong. Please try again.');
+<<<<<<< HEAD
 >>>>>>> 00f37922f1f2282012bdfe4f575c0b21d066fe8f
+=======
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
     }
   };
 

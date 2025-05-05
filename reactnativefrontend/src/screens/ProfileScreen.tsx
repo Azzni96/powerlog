@@ -16,6 +16,7 @@ const ProfileScreen = ({navigation}: any) => {
   const {getUser} = useUser();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     useEffect(() => {
         const fetchProfile = async () => {
             const token = await AsyncStorage.getItem("token");
@@ -45,13 +46,20 @@ const ProfileScreen = ({navigation}: any) => {
             <Button title="Back to Home" onPress={() => navigation.navigate("Home")} />
         </View>
 =======
+=======
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
   const resetToAuth = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
+<<<<<<< HEAD
         routes: [{name: 'Auth'}],
       }),
 >>>>>>> 00f37922f1f2282012bdfe4f575c0b21d066fe8f
+=======
+        routes: [{name: 'Login'}], // Change from 'Auth' to 'Login'
+      }),
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
     );
   };
 
@@ -90,11 +98,24 @@ const ProfileScreen = ({navigation}: any) => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('token');
+<<<<<<< HEAD
       console.log('Token removed, logging out');
       resetToAuth();
     } catch (error) {
       console.error('Error during logout:', error);
       Alert.alert('Error', 'Failed to logout. Please try again.');
+=======
+      await AsyncStorage.removeItem('user');
+      console.log('Token removed, logging out');
+
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Login'}],
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
+      Alert.alert('Error', 'Failed to log out');
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
     }
   };
 

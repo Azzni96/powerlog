@@ -14,7 +14,12 @@
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-community/netinfo": "11.4.1",
     "@react-navigation/bottom-tabs": "6.5.11",
+<<<<<<< HEAD
     "@react-navigation/native": "6.1.9",
+=======
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^7.3.12",
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
     "@react-navigation/stack": "6.3.20",
     "@rneui/base": "^4.0.0-rc.6",
     "@rneui/themed": "^4.0.0-rc.6",

@@ -14,6 +14,7 @@ const HomeScreen = ({navigation}: any) => {
   const [meals, setMeals] = useState([]);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     useEffect(() => {
         const fetchProfile = async () => {
             const token = await AsyncStorage.getItem("token");
@@ -34,6 +35,8 @@ const HomeScreen = ({navigation}: any) => {
         fetchProfile();
     }, []);
 =======
+=======
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
   // Function to navigate to Auth stack (for logout or authentication failures)
   const resetToAuth = () => {
     // This resets the entire navigation state to show the Auth stack
@@ -44,7 +47,10 @@ const HomeScreen = ({navigation}: any) => {
       }),
     );
   };
+<<<<<<< HEAD
 >>>>>>> 00f37922f1f2282012bdfe4f575c0b21d066fe8f
+=======
+>>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
 
   useEffect(() => {
     const loadCalorieData = async () => {
