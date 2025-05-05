@@ -20,7 +20,6 @@ interface WorkoutForm {
 }
 
 const ManageWorkouts = () => {
-  // Updated to start with an empty array instead of hardcoded workouts
   const [workouts, setWorkouts] = useState<WorkoutForm[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -48,9 +47,14 @@ const ManageWorkouts = () => {
   // Keep track of url mappings for newly added workouts
   const [workoutMediaUrls, setWorkoutMediaUrls] = useState<{[key: string]: string}>({});
 
+  // Filter states
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedProgram, setSelectedProgram] = useState<string>('');
+  const [showImagesOnly, setShowImagesOnly] = useState<boolean>(false);
+  const [showVideosOnly, setShowVideosOnly] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
-  // Modified to fetch workouts from backend
   const fetchWorkouts = async () => {
     try {
       setLoading(true);
@@ -66,10 +70,16 @@ const ManageWorkouts = () => {
 
       console.log('Backend response:', response.data);
 
-      // إذا كانت الاستجابة كائن واحد وليس مصفوفة
-      const data = Array.isArray(response.data) ? response.data : [response.data];
-
-      setWorkouts(data);
+      let data: any = response.data;
+      if (Array.isArray(data)) {
+        setWorkouts(data);
+      } else if (data && Array.isArray(data.rows)) {
+        setWorkouts(data.rows);
+      } else if (data && typeof data === 'object' && data.Id) {
+        setWorkouts([data]);
+      } else {
+        setWorkouts([]);
+      }
     } catch (error) {
       console.error('Error fetching workouts:', error);
       setError('Failed to fetch workouts. Please try again later.');
@@ -77,7 +87,6 @@ const ManageWorkouts = () => {
       setLoading(false);
     }
   };
-
 
   // Create a new workout
   const createWorkout = async (e: React.FormEvent) => {
@@ -95,10 +104,8 @@ const ManageWorkouts = () => {
         return;
       }
 
-      // Create form data with proper numeric types
       const formData = new FormData();
 
-      // Ensure numbers are converted properly for backend
       formData.append('category', newWorkout.category);
       formData.append('workout_program', newWorkout.workout_program);
       formData.append('exercise_name', newWorkout.exercise_name);
@@ -115,10 +122,8 @@ const ManageWorkouts = () => {
         formData.append('video', videoFile);
       }
 
-
       console.log('Sending workout data to server...');
 
-      // Debug log formData contents
       for (const pair of formData.entries()) {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
@@ -131,14 +136,12 @@ const ManageWorkouts = () => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           },
-          // Increase timeout to handle large files
           timeout: 30000
         }
       );
 
       console.log('Workout created successfully:', response.data);
 
-      // Reset form
       setNewWorkout({
         category: '',
         workout_program: '',
@@ -159,13 +162,11 @@ const ManageWorkouts = () => {
 
       alert('Workout form created successfully!');
 
-      // Refresh the workouts list
       fetchWorkouts();
 
     } catch (error: any) {
       console.error('Error creating workout:', error);
 
-      // Enhanced error logging
       if (error.response) {
         console.error('Response status:', error.response.status);
         console.error('Response data:', error.response.data);
@@ -178,11 +179,9 @@ const ManageWorkouts = () => {
           setError(`Server error (${error.response.status}). Please try again.`);
         }
       } else if (error.request) {
-        // Request was made but no response received
         console.error('No response received:', error.request);
         setError('No response from server. Check your connection.');
       } else {
-        // Error in setting up the request
         setError(`Request error: ${error.message}`);
       }
     }
@@ -201,7 +200,6 @@ const ManageWorkouts = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Remove from local state
       setWorkouts(workouts.filter(workout => workout.Id !== id));
       alert('Workout deleted successfully!');
 
@@ -214,7 +212,6 @@ const ManageWorkouts = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
-    // Convert numeric fields to numbers
     if (['times_performed', 'weight_kg', 'sets', 'duration_minutes'].includes(name)) {
       setNewWorkout({
         ...newWorkout,
@@ -228,7 +225,6 @@ const ManageWorkouts = () => {
     }
   };
 
-  // Update the image file handler
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -237,7 +233,6 @@ const ManageWorkouts = () => {
       if (isImage) {
         setImageFile(file);
 
-        // Create a URL for preview
         const previewUrl = URL.createObjectURL(file);
         setImagePreview(previewUrl);
 
@@ -249,7 +244,6 @@ const ManageWorkouts = () => {
     }
   };
 
-  // Update the video file handler
   const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -258,7 +252,6 @@ const ManageWorkouts = () => {
       if (isVideo) {
         setVideoFile(file);
 
-        // Create a URL for preview
         const previewUrl = URL.createObjectURL(file);
         setVideoPreview(previewUrl);
 
@@ -273,12 +266,10 @@ const ManageWorkouts = () => {
   useEffect(() => {
     fetchWorkouts();
 
-    // Clean up URL objects on unmount
     return () => {
       if (imagePreview) URL.revokeObjectURL(imagePreview);
       if (videoPreview) URL.revokeObjectURL(videoPreview);
 
-      // Also clean up any stored media URLs
       Object.values(workoutMediaUrls).forEach(url => {
         URL.revokeObjectURL(url);
       });
@@ -323,7 +314,6 @@ const ManageWorkouts = () => {
     );
   };
 
-  // Media preview for the form
   const renderMediaPreview = () => {
     return (
       <div className="media-previews">
@@ -347,13 +337,42 @@ const ManageWorkouts = () => {
     );
   };
 
+  const categories = [...new Set(workouts.map(workout => workout.category))];
+  const programs = selectedCategory
+    ? [...new Set(workouts
+        .filter(workout => workout.category === selectedCategory)
+        .map(workout => workout.workout_program))]
+    : [];
+
+  const filteredWorkouts = workouts.filter(workout => {
+    const matchesCategory = !selectedCategory || workout.category === selectedCategory;
+    const matchesProgram = !selectedProgram || workout.workout_program === selectedProgram;
+    const matchesImage = !showImagesOnly || !!workout.photo;
+    const matchesVideo = !showVideosOnly || !!workout.video;
+    return matchesCategory && matchesProgram && matchesImage && matchesVideo;
+  });
+
+  const toggleImagesOnly = () => {
+    setShowImagesOnly(!showImagesOnly);
+    if (!showImagesOnly) setShowVideosOnly(false);
+  };
+  const toggleVideosOnly = () => {
+    setShowVideosOnly(!showVideosOnly);
+    if (!showVideosOnly) setShowImagesOnly(false);
+  };
+  const resetFilters = () => {
+    setSelectedCategory('');
+    setSelectedProgram('');
+    setShowImagesOnly(false);
+    setShowVideosOnly(false);
+  };
+
   return (
     <div className="admin-dashboard">
       <h2>Manage Workout Forms</h2>
 
       {error && <div className="error">{error}</div>}
 
-      {/* Create Workout Form */}
       <button
         className="btn"
         onClick={() => setIsCreating(!isCreating)}
@@ -498,7 +517,6 @@ const ManageWorkouts = () => {
               )}
             </div>
 
-            {/* Show previews */}
             {(imagePreview || videoPreview) && renderMediaPreview()}
 
             <div className="form-group">
@@ -515,15 +533,96 @@ const ManageWorkouts = () => {
             <button type="submit" className="btn update-btn">Create Workout</button>
           </form>
         </div>
-      ) : null}
+      ) : (
+        <div className="workout-filters">
+          <h3>Filter Workouts</h3>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Category</label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setSelectedProgram('');
+                }}
+              >
+                <option value="">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Program</label>
+              <select
+                value={selectedProgram}
+                onChange={(e) => setSelectedProgram(e.target.value)}
+                disabled={!selectedCategory}
+              >
+                <option value="">All Programs</option>
+                {programs.map(program => (
+                  <option key={program} value={program}>{program}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="media-filters">
+            <button
+              className={`filter-btn ${showImagesOnly ? 'active' : ''}`}
+              onClick={toggleImagesOnly}
+            >
+              Images Only
+            </button>
+            <button
+              className={`filter-btn ${showVideosOnly ? 'active' : ''}`}
+              onClick={toggleVideosOnly}
+            >
+              Videos Only
+            </button>
+            <button
+              className="filter-btn reset"
+              onClick={resetFilters}
+            >
+              Reset Filters
+            </button>
+          </div>
+          {(showImagesOnly || showVideosOnly || selectedCategory || selectedProgram) && (
+            <div className="active-filters">
+              <p>Active filters:</p>
+              <div className="filter-tags">
+                {selectedCategory && (
+                  <span className="filter-tag">
+                    Category: {selectedCategory}
+                  </span>
+                )}
+                {selectedProgram && (
+                  <span className="filter-tag">
+                    Program: {selectedProgram}
+                  </span>
+                )}
+                {showImagesOnly && (
+                  <span className="filter-tag">
+                    Media: Images
+                  </span>
+                )}
+                {showVideosOnly && (
+                  <span className="filter-tag">
+                    Media: Videos
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {loading ? (
         <p>Loading workouts...</p>
       ) : (
         <>
-          {workouts.length > 0 ? (
+          {filteredWorkouts.length > 0 ? (
             <div className="workouts-grid">
-              {workouts.map((workout) => (
+              {filteredWorkouts.map((workout) => (
                 <div key={workout.Id} className="workout-card">
                   <div className="workout-header">
                     <h3>{workout.exercise_name}</h3>
@@ -538,7 +637,6 @@ const ManageWorkouts = () => {
                     <p><strong>Category:</strong> {workout.category}</p>
                     <p><strong>Program:</strong> {workout.workout_program}</p>
 
-                    {/* Add media type indicator */}
                     {(workout.photo || workout.video) && (
                       <p className="media-type">
                         <strong>Media:</strong> {workout.photo ? 'Image' : ''} {workout.photo && workout.video ? '& ' : ''} {workout.video ? 'Video' : ''}
@@ -596,7 +694,7 @@ const ManageWorkouts = () => {
               ))}
             </div>
           ) : (
-            <p>No workouts found. Create a workout to get started.</p>
+            <p>No workouts found. {(selectedCategory || selectedProgram || showImagesOnly || showVideosOnly) ? 'Try changing your filters.' : 'Create a workout to get started.'}</p>
           )}
         </>
       )}

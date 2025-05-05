@@ -3,7 +3,7 @@ import pool from "../database/db";
 // Get all workout forms
 export const getAllWorkoutForms = async () => {
   const conn = await pool.getConnection();
-  const [rows] = await conn.query("SELECT * FROM WorkoutForms ORDER BY Id DESC");
+  const rows = await conn.query("SELECT * FROM WorkoutForms ORDER BY Id DESC");
   conn.release();
   return rows;
 };
