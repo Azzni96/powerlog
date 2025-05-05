@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {Platform} from 'react-native';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Automatically determine the correct API URL based on environment
 const getBaseURL = () => {
@@ -73,7 +74,98 @@ const useUser = () => {
     }
   };
 
-  return {postUser, getUser};
+  const login = async (nameEmail: string, password: string) => {
+    try {
+      // IMPORTANT: Use postUser wrapper and name_email (with underscore)
+      const {data, ok} = await postUser('/user/login', {
+        name_email: nameEmail, // This is the key - use name_email with underscore
+        password,
+      });
+
+      if (!ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      console.log('Login successful');
+
+      // Extract data from the response
+      const {token, isFirstLogin} = data;
+      await AsyncStorage.setItem('token', token);
+
+      if (isFirstLogin) {
+        await AsyncStorage.setItem('isFirstLogin', 'true');
+      }
+
+      return data;
+    } catch (error) {
+      console.error(
+        'Login error:',
+        (error as any).response?.data || (error as Error).message,
+      );
+      throw error;
+    }
+  };
+
+  // Add registration function
+  const register = async (name: string, email: string, password: string) => {
+    return await postUser('/user/signup', {
+      name,
+      email,
+      password,
+      confirm_password: password,
+    });
+  };
+
+  // Add function to get onboarding status
+  const getOnboardingStatus = async (token: string) => {
+    return await getUser('/user/onboarding/status', token);
+  };
+
+  // Add function to save onboarding responses
+  const saveOnboardingResponses = async (responses: any[], token: string) => {
+    try {
+      // Log what we're sending
+      console.log('Sending to:', `${BASE_URL}/user/onboarding/responses`);
+      console.log('Payload:', JSON.stringify({responses}));
+
+      const response = await axios.post(
+        `${BASE_URL}/user/onboarding/responses`,
+        {responses}, // Make sure it's wrapped in an object
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      return {data: response.data, ok: true};
+    } catch (error: any) {
+      console.log('API error details:', error);
+
+      // Add more detailed error logging
+      if (error.response) {
+        console.log('Error response data:', error.response.data);
+        console.log('Error response status:', error.response.status);
+      }
+
+      return {
+        data: error.response?.data || {error: 'Failed to save responses'},
+        ok: false,
+      };
+    }
+  };
+
+  // Return all functions
+  return {
+    postUser,
+    getUser,
+    login,
+    register,
+    getOnboardingStatus,
+    saveOnboardingResponses,
+    BASE_URL,
+  };
 };
 
 export default useUser;

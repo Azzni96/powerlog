@@ -6,14 +6,15 @@ import {
   resetPassword,
   fetchUsers,
   updateUserInfo,
-  deleteUserAccount
+  deleteUserAccount,
+  getOnboardingStatus,
+  saveOnboardingResponses,
 } from "../controller/usercontroller";
 import { getUserById } from "../model/usermodel"; // Add this import
 
 import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
-
 // Korjattu: annetaan `next` kaikille kutsuille
 router.post("/signup", async (req, res) => {
   await signup(req, res);
@@ -64,4 +65,9 @@ router.get("/profile", authenticate, getProfile);
 
 router.put("/me", authenticate, updateUserInfo);
 router.delete("/me", authenticate, deleteUserAccount);
+
+// Add these new routes
+router.post("/onboarding/responses", authenticate, saveOnboardingResponses);
+router.get("/onboarding/status", authenticate, getOnboardingStatus);
+
 export default router;

@@ -11,12 +11,18 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LiveWorkout from '../screens/LiveWorkout';
 import WorkoutHistory from '../screens/WorkoutHistory';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useState, useEffect} from 'react';
+import OnboardingWelcomeScreen from '../screens/OnboardingWelcomeScreen';
+import OnboardingQuestionsScreen from '../screens/OnboardingQuestionsScreen';
+import OnboardingCompleteScreen from '../screens/OnboardingCompleteScreen';
 
 // Create navigators
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
 const RootStack = createStackNavigator();
-
+const Stack = createStackNavigator();
+const OnBoardingStack = createStackNavigator();
 // Tab navigator (shown after login)
 const TabScreen = () => {
   return (
@@ -63,17 +69,113 @@ const AuthScreen = () => {
   );
 };
 
+// Simplify the OnBoardingScreen component
+const OnBoardingScreen = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen
+        name="OnboardingWelcome"
+        component={OnboardingWelcomeScreen}
+      />
+      <Stack.Screen
+        name="OnboardingQuestions"
+        component={OnboardingQuestionsScreen}
+      />
+      <Stack.Screen
+        name="OnboardingComplete"
+        component={OnboardingCompleteScreen}
+      />
+    </Stack.Navigator>
+  );
+};
+
 // Root navigator with named screens
 const Navigator = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState({onboarded: false});
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const onboardingComplete =
+          await AsyncStorage.getItem('onboardingComplete');
+        const isFirstLogin = await AsyncStorage.getItem('isFirstLogin');
+
+        console.log('Auth check:', {
+          token: !!token,
+          onboarded: onboardingComplete,
+          isFirstLogin,
+        });
+
+        setIsAuthenticated(!!token);
+
+        // Important: Check for explicit first login flag
+        if (isFirstLogin === 'true') {
+          console.log('First login detected, showing onboarding');
+          setUser({onboarded: false});
+          // Clear the flag once we've detected it
+          await AsyncStorage.removeItem('isFirstLogin');
+        } else {
+          console.log('Not first login, onboarded status:', onboardingComplete);
+          setUser({onboarded: onboardingComplete === 'true'});
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const renderScreens = () => {
+    // Skip the splash screen check
+    if (isAuthenticated) {
+      // Check if user has completed onboarding
+      if (!user.onboarded) {
+        return (
+          <>
+            <Stack.Screen
+              name="OnboardingWelcome"
+              component={OnboardingWelcomeScreen}
+            />
+            <Stack.Screen
+              name="OnboardingQuestions"
+              component={OnboardingQuestionsScreen}
+            />
+            <Stack.Screen
+              name="OnboardingComplete"
+              component={OnboardingCompleteScreen}
+            />
+          </>
+        );
+      }
+      // Regular authenticated user flow
+      return (
+        <>
+          <Stack.Screen name="Main" component={TabScreen} />
+        </>
+      );
+    }
+
+    // Not authenticated
+    return (
+      <>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
+      </>
+    );
+  };
+
   return (
     <NavigationContainer>
-      <RootStack.Navigator
-        screenOptions={{headerShown: false}}
-        initialRouteName="Auth"
-      >
-        <RootStack.Screen name="Auth" component={AuthScreen} />
-        <RootStack.Screen name="Main" component={TabScreen} />
-      </RootStack.Navigator>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        {renderScreens()}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

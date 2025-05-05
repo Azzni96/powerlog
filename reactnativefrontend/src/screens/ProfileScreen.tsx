@@ -19,7 +19,7 @@ const ProfileScreen = ({navigation}: any) => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'Auth'}],
+        routes: [{name: 'Login'}], // Change from 'Auth' to 'Login'
       }),
     );
   };
@@ -59,11 +59,16 @@ const ProfileScreen = ({navigation}: any) => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('user');
       console.log('Token removed, logging out');
-      resetToAuth();
+
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Login'}],
+      });
     } catch (error) {
       console.error('Error during logout:', error);
-      Alert.alert('Error', 'Failed to logout. Please try again.');
+      Alert.alert('Error', 'Failed to log out');
     }
   };
 
