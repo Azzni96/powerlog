@@ -290,46 +290,35 @@ const ManageWorkouts = () => {
   };
 
   const renderMedia = (workout: WorkoutForm) => {
-    // For photos
-    if (workout.photo) {
-      // Full URL path including the server address
-      const photoUrl = `http://localhost:3000/uploads/${workout.photo}`;
-      console.log("Rendering photo:", photoUrl); // Debug log
-
-      return (
-        <div className="workout-media">
-          <img
-            src={photoUrl}
-            alt={workout.exercise_name}
-            className="workout-thumbnail"
-            onError={(e) => {
-              console.error("Image failed to load:", photoUrl);
-              e.currentTarget.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
-            }}
-          />
-
-        </div>
-      );
-    }
-    // For videos
-    else if (workout.video) {
-      const videoUrl = `http://localhost:3000/uploads/${workout.video}`;
-      console.log("Rendering video:", videoUrl); // Debug log
-
-      return (
-        <div className="workout-media">
-          <video controls className="workout-thumbnail">
-            <source src={videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-
-        </div>
-      );
-    }
-    // No media
+    const hasPhoto = !!workout.photo;
+    const hasVideo = !!workout.video;
     return (
-      <div className="workout-media workout-no-media">
-        <span>No media</span>
+      <div className="workout-media media-row">
+        {hasPhoto && (
+          <div className="media-col">
+            <img
+              src={`http://localhost:3000/uploads/${workout.photo}`}
+              alt={workout.exercise_name}
+              className="workout-thumbnail"
+              onError={(e) => {
+                e.currentTarget.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
+              }}
+            />
+          </div>
+        )}
+        {hasVideo && (
+          <div className="media-col">
+            <video controls className="workout-thumbnail">
+              <source src={`http://localhost:3000/uploads/${workout.video}`} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        )}
+        {!hasPhoto && !hasVideo && (
+          <div className="workout-no-media">
+            <span>No media</span>
+          </div>
+        )}
       </div>
     );
   };
