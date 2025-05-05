@@ -11,25 +11,19 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LiveWorkout from '../screens/LiveWorkout';
 import WorkoutHistory from '../screens/WorkoutHistory';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-<<<<<<< HEAD
-=======
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState, useEffect} from 'react';
 import OnboardingWelcomeScreen from '../screens/OnboardingWelcomeScreen';
 import OnboardingQuestionsScreen from '../screens/OnboardingQuestionsScreen';
 import OnboardingCompleteScreen from '../screens/OnboardingCompleteScreen';
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
 
 // Create navigators
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
 const RootStack = createStackNavigator();
-<<<<<<< HEAD
 
-=======
 const Stack = createStackNavigator();
 const OnBoardingStack = createStackNavigator();
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
 // Tab navigator (shown after login)
 const TabScreen = () => {
   return (
@@ -76,19 +70,6 @@ const AuthScreen = () => {
   );
 };
 
-<<<<<<< HEAD
-// Root navigator with named screens
-const Navigator = () => {
-  return (
-    <NavigationContainer>
-      <RootStack.Navigator
-        screenOptions={{headerShown: false}}
-        initialRouteName="Auth"
-      >
-        <RootStack.Screen name="Auth" component={AuthScreen} />
-        <RootStack.Screen name="Main" component={TabScreen} />
-      </RootStack.Navigator>
-=======
 // Simplify the OnBoardingScreen component
 const OnBoardingScreen = () => {
   return (
@@ -193,10 +174,16 @@ const Navigator = () => {
 
   return (
     <NavigationContainer>
+      <RootStack.Navigator
+        screenOptions={{headerShown: false}}
+        initialRouteName="Auth"
+      >
+        <RootStack.Screen name="Auth" component={AuthScreen} />
+        <RootStack.Screen name="Main" component={TabScreen} />
+      </RootStack.Navigator>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {renderScreens()}
       </Stack.Navigator>
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
     </NavigationContainer>
   );
 };
