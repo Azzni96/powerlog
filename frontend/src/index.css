@@ -254,15 +254,7 @@ body {
   box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
 }
 
-.logout-btn {
-  background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
-  margin-top: 1.5rem;
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3) !important;
-}
 
-.logout-btn:hover {
-  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4) !important;
-}
 
 /* Users Table Styling */
 .users-table-container {
@@ -422,6 +414,38 @@ body {
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Button Base Styles */
+.btn-base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-nav .btn-danger {
+  background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+  color: white;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3) !important;
+}
+
+.admin-nav .btn-danger:hover {
+  background: linear-gradient(135deg, #e53935, #b71c1c) !important;
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4) !important;
+}
+
+.btn-danger:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, #e53935, #b71c1c);
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
 }
 
 /* Workout Cards Grid */

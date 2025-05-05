@@ -44,14 +44,13 @@ const ManageWorkouts = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
 
-  // Keep track of url mappings for newly added workouts
-  const [workoutMediaUrls, setWorkoutMediaUrls] = useState<{[key: string]: string}>({});
+  // Removed unused workoutMediaUrls state to resolve the error.
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedProgram, setSelectedProgram] = useState<string>('');
-  const [showImagesOnly, setShowImagesOnly] = useState<boolean>(false);
-  const [showVideosOnly, setShowVideosOnly] = useState<boolean>(false);
+  const [showImagesOnly] = useState<boolean>(false);
+  const [showVideosOnly] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -270,9 +269,7 @@ const ManageWorkouts = () => {
       if (imagePreview) URL.revokeObjectURL(imagePreview);
       if (videoPreview) URL.revokeObjectURL(videoPreview);
 
-      Object.values(workoutMediaUrls).forEach(url => {
-        URL.revokeObjectURL(url);
-      });
+      // Removed unused workoutMediaUrls cleanup to resolve the error.
     };
   }, []);
 
@@ -352,20 +349,9 @@ const ManageWorkouts = () => {
     return matchesCategory && matchesProgram && matchesImage && matchesVideo;
   });
 
-  const toggleImagesOnly = () => {
-    setShowImagesOnly(!showImagesOnly);
-    if (!showImagesOnly) setShowVideosOnly(false);
-  };
-  const toggleVideosOnly = () => {
-    setShowVideosOnly(!showVideosOnly);
-    if (!showVideosOnly) setShowImagesOnly(false);
-  };
-  const resetFilters = () => {
-    setSelectedCategory('');
-    setSelectedProgram('');
-    setShowImagesOnly(false);
-    setShowVideosOnly(false);
-  };
+  // Removed unused toggleImagesOnly function to resolve the error.
+  // Removed unused toggleVideosOnly function to resolve the error.
+  // Removed unused resetFilters function
 
   return (
     <div className="admin-dashboard">

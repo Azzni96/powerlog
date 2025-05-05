@@ -20,7 +20,7 @@ const App = () => {
   const UnderConstruction = ({ feature }: { feature: string }) => (
     <div className="admin-dashboard">
       <h2>{feature} Management</h2>
-      <p>This page is currently under construction.</p>
+      <p>This page is currently under construction. Our hardworking engineers are on it. So don't sweat because of this. Sweat at the gym.</p>
       <button onClick={() => window.history.back()} className="btn">
         Go Back
       </button>
