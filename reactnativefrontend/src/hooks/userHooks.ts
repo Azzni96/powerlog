@@ -1,10 +1,7 @@
 import axios from 'axios';
 import {Platform} from 'react-native';
 import Constants from 'expo-constants';
-<<<<<<< HEAD
-=======
 import AsyncStorage from '@react-native-async-storage/async-storage';
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
 
 // Automatically determine the correct API URL based on environment
 const getBaseURL = () => {
@@ -77,9 +74,6 @@ const useUser = () => {
     }
   };
 
-<<<<<<< HEAD
-  return {postUser, getUser};
-=======
   const login = async (nameEmail: string, password: string) => {
     try {
       // IMPORTANT: Use postUser wrapper and name_email (with underscore)
@@ -172,7 +166,6 @@ const useUser = () => {
     saveOnboardingResponses,
     BASE_URL,
   };
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
 };
 
 export default useUser;

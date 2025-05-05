@@ -11,58 +11,11 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import useUser from '../hooks/userHooks';
-<<<<<<< HEAD
-import {CommonActions} from '@react-navigation/native'; // Add this import
-=======
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
 
 const LoginScreen = ({navigation}: any) => {
   const [nameEmail, setNameEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-<<<<<<< HEAD
-  const {postUser} = useUser();
-
-<<<<<<< HEAD
-    const handleLogin = async () => {
-        try {
-            const response = await axios.post<{ token: string }>("http://10.81.220.32:3000/api/user/login", {
-                name_email: nameEmail,
-                password,
-            });
-=======
-  const handleLogin = async () => {
-    if (!nameEmail || !password) {
-      Alert.alert('Error', 'Please enter all fields');
-      return;
-    }
->>>>>>> 00f37922f1f2282012bdfe4f575c0b21d066fe8f
-
-    try {
-      setLoading(true);
-      const {data, ok} = await postUser('/user/login', {
-        name_email: nameEmail,
-        password,
-      });
-
-      if (ok && data.token) {
-        console.log('Login successful, saving token');
-        await AsyncStorage.setItem('token', data.token);
-
-        // Update: Direct navigation to Main stack using CommonActions
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'Main'}],
-          }),
-        );
-      } else if (data.error) {
-        Alert.alert('Error', data.error);
-      } else {
-        Alert.alert('Error', 'Login failed');
-      }
-    } catch (error: any) {
-=======
   const {login} = useUser(); // Use the hook's login function
 
   const handleLogin = async () => {
@@ -85,7 +38,6 @@ const LoginScreen = ({navigation}: any) => {
         });
       }
     } catch (error) {
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
       console.error('Error during login:', error);
       Alert.alert('Error', 'Login failed');
     } finally {

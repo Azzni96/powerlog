@@ -15,51 +15,12 @@ const ProfileScreen = ({navigation}: any) => {
   const [user, setUser] = useState<any>(null);
   const {getUser} = useUser();
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    useEffect(() => {
-        const fetchProfile = async () => {
-            const token = await AsyncStorage.getItem("token");
-            if (!token) {
-                navigation.replace("Login");
-                return;
-            }
-            try {
-                const response = await axios.get("http://10.81.220.32:3000/api/user/profile", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setUser(response.data);
-            } catch (error) {
-                Alert.alert("Error", "Failed to fetch profile");
-                navigation.replace("Login");
-            }
-        };
-        fetchProfile();
-    }, []);
-
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Profile</Text>
-            <Text>Name: {user?.name}</Text>
-            <Text>Email: {user?.email}</Text>
-            <Text>User Level: {user?.user_level}</Text>
-            <Button title="Back to Home" onPress={() => navigation.navigate("Home")} />
-        </View>
-=======
-=======
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
   const resetToAuth = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-<<<<<<< HEAD
-        routes: [{name: 'Auth'}],
-      }),
->>>>>>> 00f37922f1f2282012bdfe4f575c0b21d066fe8f
-=======
         routes: [{name: 'Login'}], // Change from 'Auth' to 'Login'
       }),
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
     );
   };
 
@@ -98,13 +59,6 @@ const ProfileScreen = ({navigation}: any) => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('token');
-<<<<<<< HEAD
-      console.log('Token removed, logging out');
-      resetToAuth();
-    } catch (error) {
-      console.error('Error during logout:', error);
-      Alert.alert('Error', 'Failed to logout. Please try again.');
-=======
       await AsyncStorage.removeItem('user');
       console.log('Token removed, logging out');
 
@@ -115,7 +69,6 @@ const ProfileScreen = ({navigation}: any) => {
     } catch (error) {
       console.error('Error during logout:', error);
       Alert.alert('Error', 'Failed to log out');
->>>>>>> 3d2a666722fb486d06ffaf598da7037305f6dd72
     }
   };
 
