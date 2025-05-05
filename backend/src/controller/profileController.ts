@@ -11,6 +11,12 @@ export const getUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     const profile = await getProfileByUserId(userId);
+    
+    if (!profile) {
+      // Return 404 if no profile found
+       res.status(404).json({ error: "Profile not found" });
+    }
+    
     res.status(200).json(profile);
   } catch (error) {
     console.error("Error getting profile:", error);
@@ -22,6 +28,13 @@ export const getUserProfile = async (req: Request, res: Response) => {
 export const createUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
+    
+    // Check if user already has a profile
+    const existingProfile = await getProfileByUserId(userId);
+    if (existingProfile) {
+       res.status(409).json({ error: "User already has a profile" });
+    }
+    
     const { gender, age, height, weight, workout_days, calorie_target } = req.body;
     await createProfile(userId, gender, age, height, weight, workout_days, calorie_target);
     res.status(201).json({ message: "Profile created" });

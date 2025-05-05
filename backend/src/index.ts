@@ -45,11 +45,11 @@ app.use(errorHandler);
 app.get("/api/test", (req, res) => {
   res.json({ message: "API is working" });
 });
-
-app.listen(port, "0.0.0.0", () => {
-  console.log(
-    `Server running on port ${port} and accessible from all interfaces`
-  );
-});
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 export default app;

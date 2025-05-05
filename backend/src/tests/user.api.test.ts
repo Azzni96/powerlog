@@ -12,7 +12,6 @@ beforeAll(async () => {
     confirm_password: 'testpass123',
     user_level: 'Customer'
   });
-
   const res = await request(app).post('/api/user/login').send({
     name_email: 'apitest@example.com',
     password: 'testpass123'
