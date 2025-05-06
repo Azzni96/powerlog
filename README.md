@@ -67,7 +67,7 @@ Sovellus sisältää seuraavat toiminnot:
 ## Mahdolliset tiedossa olevat bugit/ongelmat
 
 - **Bugi 1**: Tietojen muokkaus ei aina tallenna oikein, jos yhteys katkeaa.
-- **Bugi 2**: Joissain selaimissa käyttöliittymä ei skaalautu oikein.
+- **Bugi 2**: Joissain selaimissa käyttöliittymä ei skaalaudu oikein.
 - **Bugi 3**: Jos käyttäjä ei ole kirjautuneena, hän ei voi käyttää API:ta, mutta ei saa selkeää virheilmoitusta.
 
 ## Referenssit, käytetyt tutoriaalit, grafiikkakirjastot, tms.
