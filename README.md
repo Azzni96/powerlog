@@ -2,7 +2,7 @@
 
 ## Kuvakaappaukset sovelluksen käyttöliittymästä
 
-![Admin Dashboard](readme-img\dashboard.png)
+![Admin Dashboard](readme-img/dashboard.png)
 ![Manage Users](readme-img\manageusers.png)
 ![Manage Workouts](readme-img\managemedia.png)
 ![Calorie Tracker](readme-img\calorietrack.jpg)
