@@ -22,28 +22,20 @@ console.log('API Base URL:', BASE_URL);
 const useUser = () => {
   const postUser = async (endpoint: string, body: any) => {
     try {
-      console.log(`Sending request to: ${BASE_URL}${endpoint}`);
-      const response = await axios.post(`${BASE_URL}${endpoint}`, body, {
-        headers: {'Content-Type': 'application/json'},
-        timeout: 15000,
-      });
+      console.log('Posting to:', `${BASE_URL}${endpoint}`);
+
+      const response = await axios.post(`${BASE_URL}${endpoint}`, body);
+
+      console.log('Response status:', response.status);
+      console.log(
+        'Response data:',
+        JSON.stringify(response.data).substring(0, 200),
+      );
+
       return {data: response.data, ok: true};
     } catch (error: any) {
-      console.log('API error details:', error);
-      if (error.message === 'Network Error') {
-        return {
-          data: {
-            error:
-              'Cannot connect to server. Please check your network connection.',
-          },
-          ok: false,
-        };
-      }
-      // Add default return for other errors
-      return {
-        data: error.response?.data || {error: 'Something went wrong'},
-        ok: false,
-      };
+      console.error('API error:', error.response?.data || error.message);
+      return {data: error.response?.data || {error: error.message}, ok: false};
     }
   };
 
@@ -74,34 +66,29 @@ const useUser = () => {
     }
   };
 
-  const login = async (nameEmail: string, password: string) => {
+  const login = async (nameOrEmail: string, password: string) => {
     try {
-      // IMPORTANT: Use postUser wrapper and name_email (with underscore)
-      const {data, ok} = await postUser('/user/login', {
-        name_email: nameEmail, // This is the key - use name_email with underscore
-        password,
+      console.log(`Attempting login for user: ${nameOrEmail}`);
+
+      // Log EXACT request body for debugging
+      const requestBody = {
+        nameEmail: nameOrEmail,
+        password: password,
+      };
+      console.log('Sending exact request body:', requestBody);
+
+      // Make the request with explicit Content-Type
+      const response = await axios.post(`${BASE_URL}/user/login`, requestBody, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      if (!ok) {
-        throw new Error(data.error || 'Login failed');
-      }
+      console.log('Login response status:', response.status);
 
-      console.log('Login successful');
-
-      // Extract data from the response
-      const {token, isFirstLogin} = data;
-      await AsyncStorage.setItem('token', token);
-
-      if (isFirstLogin) {
-        await AsyncStorage.setItem('isFirstLogin', 'true');
-      }
-
-      return data;
+      return response.data;
     } catch (error) {
-      console.error(
-        'Login error:',
-        (error as any).response?.data || (error as Error).message,
-      );
+      console.error('Login error:', error);
       throw error;
     }
   };
@@ -124,13 +111,11 @@ const useUser = () => {
   // Add function to save onboarding responses
   const saveOnboardingResponses = async (responses: any[], token: string) => {
     try {
-      // Log what we're sending
-      console.log('Sending to:', `${BASE_URL}/user/onboarding/responses`);
-      console.log('Payload:', JSON.stringify({responses}));
+      console.log('Sending to:', `${BASE_URL}/forms-answers/user-answers`);
 
       const response = await axios.post(
-        `${BASE_URL}/user/onboarding/responses`,
-        {responses}, // Make sure it's wrapped in an object
+        `${BASE_URL}/forms-answers/user-answers`,
+        {answers: responses},
         {
           headers: {
             'Content-Type': 'application/json',
@@ -140,15 +125,8 @@ const useUser = () => {
       );
 
       return {data: response.data, ok: true};
-    } catch (error: any) {
-      console.log('API error details:', error);
-
-      // Add more detailed error logging
-      if (error.response) {
-        console.log('Error response data:', error.response.data);
-        console.log('Error response status:', error.response.status);
-      }
-
+    } catch (error) {
+      console.error('API error details:', error);
       return {
         data: error.response?.data || {error: 'Failed to save responses'},
         ok: false,

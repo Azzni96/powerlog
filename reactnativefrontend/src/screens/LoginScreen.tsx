@@ -11,35 +11,96 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import useUser from '../hooks/userHooks';
+import {useAuth} from '../context/AuthContext';
 
 const LoginScreen = ({navigation}: any) => {
   const [nameEmail, setNameEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const {login} = useUser(); // Use the hook's login function
+  const {setIsAuthenticated, updateUser} = useAuth();
+
+  interface LoginResponse {
+    token: string;
+    isFirstLogin: boolean;
+    user?: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }
 
   const handleLogin = async () => {
     try {
-      setLoading(true);
+      // Log values to verify they're not empty
+      console.log(
+        'Attempting login with username/email:',
+        nameEmail || 'EMPTY',
+      );
 
-      // Use the hook instead of direct axios call
+      if (
+        !nameEmail ||
+        !password ||
+        nameEmail.trim() === '' ||
+        password.trim() === ''
+      ) {
+        Alert.alert('Error', 'Username/email and password are required');
+        return;
+      }
+
+      setLoading(true);
       const data = await login(nameEmail, password);
 
-      // Check if first login
+      // Store token
+      await AsyncStorage.setItem('token', data.token);
+
+      console.log('Login response:', {isFirstLogin: data.isFirstLogin}); // Debug
+
+      // Store first login flag (IMPORTANT)
       if (data.isFirstLogin) {
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'OnboardingWelcome'}],
-        });
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Main'}],
+        await AsyncStorage.setItem('isFirstLogin', 'true');
+        await AsyncStorage.removeItem('onboardingComplete'); // Make sure onboardingComplete is NOT set for new users
+        console.log('First login detected, saving flag');
+      }
+
+      // IMPORTANT: Force state refresh
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+
+      // Update BOTH auth states
+      setIsAuthenticated(true);
+
+      // Update full user object with API data
+      updateUser({
+        id: data.user?.id,
+        name: data.user?.name,
+        email: data.user?.email,
+        onboarded: !data.isFirstLogin, // Critical property for navigation
+      });
+
+      if (data.isFirstLogin) {
+        // Update the user object in context for new users
+        updateUser({
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name,
+          onboarded: false, // Critical flag for navigation
         });
       }
+
+      // Wait a moment for state to propagate (helps on slower devices)
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      // Reset navigation state completely
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Main'}], // CORRECT screen name from Navigator.tsx
+      });
     } catch (error) {
       console.error('Error during login:', error);
-      Alert.alert('Error', 'Login failed');
+      Alert.alert(
+        'Login Failed',
+        (error as any).response?.data?.error || 'Invalid credentials',
+      );
     } finally {
       setLoading(false);
     }

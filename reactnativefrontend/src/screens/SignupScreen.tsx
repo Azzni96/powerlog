@@ -62,7 +62,6 @@ const SignupScreen = ({navigation}: Props) => {
         confirm_password: confirmPassword,
       });
       console.log('API request completed'); // Log after API call
-      console.log('API response:', {data, ok}); // Log API response
 
       if (ok) {
         Alert.alert('Success', 'Account created successfully!', [

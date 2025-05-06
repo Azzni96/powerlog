@@ -2,15 +2,20 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {CommonActions} from '@react-navigation/native';
 
 const OnboardingCompleteScreen = ({navigation}) => {
-  const completeOnboarding = async () => {
+  const handleComplete = async () => {
     try {
-      // Mark onboarding as completed locally
       await AsyncStorage.setItem('onboardingComplete', 'true');
 
-      // Navigate to Login screen
-      navigation.navigate('Login'); // This will trigger Navigator's useEffect
+      // Use CommonActions instead of navigation.reset
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        }),
+      );
     } catch (error) {
       console.error('Error completing onboarding:', error);
     }
@@ -25,7 +30,7 @@ const OnboardingCompleteScreen = ({navigation}) => {
           now personalized!
         </Text>
 
-        <TouchableOpacity style={styles.button} onPress={completeOnboarding}>
+        <TouchableOpacity style={styles.button} onPress={handleComplete}>
           <Text style={styles.buttonText}>Start Using PowerLog</Text>
         </TouchableOpacity>
       </View>

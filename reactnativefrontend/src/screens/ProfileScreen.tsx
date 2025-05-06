@@ -1,149 +1,225 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
-  Button,
-  Alert,
   StyleSheet,
-  SafeAreaView,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import useUser from '../hooks/userHooks';
-import {CommonActions} from '@react-navigation/native';
+import {useAuth} from '../context/AuthContext';
+import {useNavigation} from '@react-navigation/native';
 
-const ProfileScreen = ({navigation}: any) => {
-  const [user, setUser] = useState<any>(null);
-  const {getUser} = useUser();
-
-  const resetToAuth = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{name: 'Login'}], // Change from 'Auth' to 'Login'
-      }),
-    );
-  };
+const ProfileScreen = () => {
+  const {BASE_URL} = useUser();
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState({});
+  const {logout} = useAuth();
+  const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        console.log('Fetching profile data');
-        const token = await AsyncStorage.getItem('token');
-
-        if (!token) {
-          console.log('No token found');
-          resetToAuth();
-          return;
-        }
-
-        const {data, ok} = await getUser('/user/profile', token);
-
-        if (ok && data.user) {
-          console.log('Profile data:', data.user);
-          setUser(data.user);
-        } else {
-          console.log('Failed to load profile:', data);
-          Alert.alert('Error', 'Failed to fetch profile');
-          resetToAuth();
-        }
-      } catch (error) {
-        console.error('Profile error:', error);
-        Alert.alert('Error', 'Failed to fetch profile');
-        resetToAuth();
-      }
-    };
-
-    fetchProfile();
+    fetchProfileData();
   }, []);
 
-  const handleLogout = async () => {
+  const fetchProfileData = async () => {
     try {
-      await AsyncStorage.removeItem('token');
-      await AsyncStorage.removeItem('user');
-      console.log('Token removed, logging out');
+      setLoading(true);
 
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Login'}],
+      // Get token
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+
+      // Fetch basic user data
+      const userResponse = await axios.get(`${BASE_URL}/user/profile`, {
+        headers: {Authorization: `Bearer ${token}`},
+      });
+
+      // Fetch form answers
+      const formResponse = await axios.get(
+        `${BASE_URL}/forms-answers/user-answers`,
+        {
+          headers: {Authorization: `Bearer ${token}`},
+        },
+      );
+
+      // Merge user data with form answers
+      const userData = userResponse.data;
+      const formAnswers = formResponse.data || [];
+
+      // Create labeled answers object
+      const labeledAnswers = {};
+      formAnswers.forEach((answer) => {
+        // Map question IDs to readable labels
+        switch (answer.questionId) {
+          case 1:
+            labeledAnswers.gender = answer.answerText;
+            break;
+          case 2:
+            labeledAnswers.age = answer.answerText;
+            break;
+          case 3:
+            labeledAnswers.height = answer.answerText;
+            break;
+          case 4:
+            labeledAnswers.weight = answer.answerText;
+            break;
+          case 7:
+            labeledAnswers.fitnessLevel = answer.answerText;
+            break;
+          case 8:
+            labeledAnswers.fitnessGoal = answer.answerText;
+            break;
+          default:
+            labeledAnswers[`question${answer.questionId}`] = answer.answerText;
+        }
+      });
+
+      // Set combined profile data
+      setProfile({
+        ...userData,
+        ...labeledAnswers,
       });
     } catch (error) {
-      console.error('Error during logout:', error);
-      Alert.alert('Error', 'Failed to log out');
+      console.error('Error fetching profile:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // After logout, navigation will update automatically due to auth context
+    } catch (error) {
+      console.error('Logout failed:', error);
+      Alert.alert('Error', 'Failed to log out. Please try again.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#00D0FF" />
+      </View>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>My Profile</Text>
-
-        {user ? (
-          <View style={styles.profileCard}>
-            <Text style={styles.infoLabel}>Username:</Text>
-            <Text style={styles.infoValue}>{user.username || 'N/A'}</Text>
-
-            <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={styles.infoValue}>{user.email || 'N/A'}</Text>
-
-            <Text style={styles.infoLabel}>Account Level:</Text>
-            <Text style={styles.infoValue}>
-              {user.user_level || 'Standard'}
-            </Text>
-          </View>
-        ) : (
-          <Text style={styles.loadingText}>Loading profile...</Text>
-        )}
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Your Profile</Text>
       </View>
 
-      <View style={styles.footer}>
-        <Button title="Logout" onPress={handleLogout} color="#FF3B30" />
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Account Information</Text>
+        <InfoItem label="Username" value={profile.username} />
+        <InfoItem label="Email" value={profile.email} />
       </View>
-    </SafeAreaView>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Personal Information</Text>
+        <InfoItem label="Gender" value={profile.gender} />
+        <InfoItem label="Age" value={profile.age} />
+        <InfoItem label="Height" value={profile.height} />
+        <InfoItem label="Weight" value={profile.weight} />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Fitness Profile</Text>
+        <InfoItem label="Fitness Level" value={profile.fitnessLevel} />
+        <InfoItem label="Fitness Goal" value={profile.fitnessGoal} />
+      </View>
+
+      {/* Logout Button */}
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={handleLogout}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
+
+const InfoItem = ({label, value}) => (
+  <View style={styles.infoItem}>
+    <Text style={styles.label}>{label}:</Text>
+    <Text style={styles.value}>{value || 'Not provided'}</Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#414141',
+    backgroundColor: '#f5f5f5',
   },
-  content: {
+  loadingContainer: {
     flex: 1,
-    padding: 20,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
+  header: {
+    padding: 20,
+    backgroundColor: '#00D0FF',
+  },
+  headerText: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     color: 'white',
-    textAlign: 'center',
   },
-  profileCard: {
-    backgroundColor: '#2c2c2c',
-    borderRadius: 10,
-    padding: 20,
-    width: '100%',
-    marginVertical: 20,
+  section: {
+    backgroundColor: 'white',
+    marginVertical: 10,
+    padding: 15,
+    borderRadius: 5,
+    marginHorizontal: 10,
   },
-  infoLabel: {
-    fontSize: 14,
-    color: '#999',
-    marginBottom: 5,
-  },
-  infoValue: {
+  sectionTitle: {
     fontSize: 18,
-    color: 'white',
-    marginBottom: 15,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
-  loadingText: {
-    fontSize: 16,
-    color: 'white',
-    marginTop: 30,
+  infoItem: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
-  footer: {
+  label: {
+    flex: 1,
+    fontWeight: '500',
+    color: '#666',
+  },
+  value: {
+    flex: 2,
+  },
+  logoutContainer: {
     padding: 20,
-    width: '100%',
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    width: '80%',
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

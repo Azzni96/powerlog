@@ -89,15 +89,15 @@ export const signup = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { name_email, password } = req.body;
+    const { nameEmail, password } = req.body;
 
-    if (!name_email || !password) {
+    if (!nameEmail || !password) {
       return res
         .status(400)
         .json({ error: "Email/username and password are required" });
     }
 
-    const user = await getUserByNameOrEmail(name_email);
+    const user = await getUserByNameOrEmail(nameEmail);
 
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
@@ -121,7 +121,7 @@ export const login = async (req: Request, res: Response) => {
     );
 
     // Check if this is user's first login
-    const isFirstLogin = !user.last_login_date;
+    const isFirstLogin = user.first_login === 1; // Or however you track first login
 
     // Update last_login_date
     const conn = await pool.getConnection();
@@ -131,10 +131,10 @@ export const login = async (req: Request, res: Response) => {
     );
     conn.release();
 
-    res.json({
+    res.status(200).json({
       message: "Login successful",
       token,
-      isFirstLogin, // Add this flag
+      isFirstLogin, // This needs to be included!
       user: {
         id: user.Id,
         username: user.Username,
@@ -314,5 +314,56 @@ export const getOnboardingStatus = async (
   } catch (error) {
     console.error("Error checking onboarding status:", error);
     res.status(500).json({ error: "Failed to check onboarding status" });
+  }
+};
+
+export const updateUserProfile = async (req: Request, res: Response) => {
+  let conn;
+  try {
+    const userId = (req as any).user.id;
+    console.log("Updating profile for user:", userId);
+
+    // Get profile data from request body
+    const { gender, age, height, weight, fitnessLevel, fitnessGoal } = req.body;
+
+    conn = await pool.getConnection();
+
+    // Check if user profile exists
+    const [userCheck] = await conn.query(
+      "SELECT * FROM UserProfiles WHERE user_id = ?",
+      [userId]
+    );
+
+    if (userCheck && userCheck.length > 0) {
+      // Update existing profile
+      await conn.query(
+        `UPDATE UserProfiles 
+         SET gender = ?, age = ?, height = ?, weight = ?, 
+             fitness_level = ?, fitness_goal = ?, updated_at = NOW()
+         WHERE user_id = ?`,
+        [gender, age, height, weight, fitnessLevel, fitnessGoal, userId]
+      );
+    } else {
+      // Create new profile
+      await conn.query(
+        `INSERT INTO UserProfiles 
+         (user_id, gender, age, height, weight, fitness_level, fitness_goal)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [userId, gender, age, height, weight, fitnessLevel, fitnessGoal]
+      );
+    }
+
+    // Also update onboarded status in Users table
+    await conn.query(
+      "UPDATE Users SET onboarded = TRUE, updated_at = NOW() WHERE id = ?",
+      [userId]
+    );
+
+    res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    if (conn) conn.release();
   }
 };

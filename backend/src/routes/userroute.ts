@@ -9,6 +9,7 @@ import {
   deleteUserAccount,
   getOnboardingStatus,
   saveOnboardingResponses,
+  updateUserProfile,
 } from "../controller/usercontroller";
 import { getUserById } from "../model/usermodel"; // Add this import
 
@@ -69,5 +70,6 @@ router.delete("/me", authenticate, deleteUserAccount);
 // Add these new routes
 router.post("/onboarding/responses", authenticate, saveOnboardingResponses);
 router.get("/onboarding/status", authenticate, getOnboardingStatus);
+router.post("/profile", authenticate, updateUserProfile);
 
 export default router;
