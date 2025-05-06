@@ -2,10 +2,10 @@
 
 ## Kuvakaappaukset sovelluksen käyttöliittymästä
 
-![Admin Dashboard](C:\Users\Käyttäjä\Pictures\Screenshots\dashboard.png)
-![Manage Users](C:\Users\Käyttäjä\Pictures\Screenshots\manageusers.png)
-![Manage Workouts](C:\Users\Käyttäjä\Pictures\Screenshots\managemedia.png)
-![Calorie Tracker](C:\Users\Käyttäjä\Desktop\calorietrack.jpg)
+![Admin Dashboard](readme-img\dashboard.png)
+![Manage Users](readme-img\manageusers.png)
+![Manage Workouts](readme-img\managemedia.png)
+![Calorie Tracker](readme-img\calorietrack.jpg)
 
 ## Linkit
 
@@ -20,7 +20,7 @@
 ## Tietokannan kuvaus
 
 Tässä on tietokannan rakenne ja kuvaus:
-![Tietokannan rakenne]("C:\Users\Käyttäjä\Desktop\tietokanta.jpg")
+![Tietokannan rakenne]("readme-img\tietokanta.jpg")
 
 Tietokannan taulut:
 - **Users**: Käyttäjätietojen säilytys (ID, nimi, sähköposti, salasana, käyttäjätaso)
