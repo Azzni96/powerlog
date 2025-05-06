@@ -85,6 +85,6 @@ Sovellus sisältää seuraavat toiminnot:
 - **Testitapaukset**: [https://linkki_testikansioon.com](https://github.com/Azzni96/powerlog/tree/testi/backend/src/tests)
 (https://github.com/Azzni96/powerlog/tree/web-perust-2/.github/workflows)
 
-## Varmistakaa, että opettajille on pääsy/käyttöoikeudet kaikkeen edellymainittuun materialiin
+## Varmistakaa, että opettajille on pääsy/käyttöoikeudet kaikkeen edellämainittuun materialiin
 
 - **GitHub Repository**: [https://github.com/Azzni96/powerlog/tree/web-perust-2)
